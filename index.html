@@ -16,6 +16,35 @@
   .container { width: 100%; max-width: 780px; margin: 0 auto; }
   .hidden { display: none !important; }
 
+  /* ===== CADEADO DO ADMIN ===== */
+  .admin-lock {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #a855f7;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .admin-lock:hover {
+    background: rgba(168,85,247,0.15);
+    border-color: rgba(168,85,247,0.5);
+    transform: scale(1.08);
+  }
+  .admin-lock:active {
+    transform: scale(0.95);
+  }
+
   .login-screen {
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; min-height: 85vh; text-align: center;
@@ -245,6 +274,10 @@
 </style>
 </head>
 <body>
+
+<!-- Cadeado do Admin -->
+<button class="admin-lock" id="adminLock" title="Área do Administrador">🔒</button>
+
 <div class="container">
 
   <div id="userView">
@@ -327,7 +360,6 @@ let current = 0;
 let answers = {};
 let currentSessions = [];
 
-// Dados da pessoa que está respondendo
 let respondent = {
   name: "",
   phone: "",
@@ -364,7 +396,7 @@ function updateProgress() {
 }
 
 // ============================================================
-// TELA DE IDENTIFICAÇÃO (nome + WhatsApp)
+// TELA DE IDENTIFICAÇÃO
 // ============================================================
 
 function renderIdentifyScreen() {
@@ -409,7 +441,6 @@ function renderIdentifyScreen() {
       return;
     }
 
-    // Cria session_id único combinando nome + telefone (normalizado)
     const cleanPhone = phone.replace(/\D/g, "");
     const cleanName = name.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
     respondent.name = name;
@@ -428,7 +459,7 @@ function renderIdentifyScreen() {
 }
 
 // ============================================================
-// FORMULÁRIO (perguntas)
+// FORMULÁRIO
 // ============================================================
 
 function renderQuestion() {
@@ -710,7 +741,6 @@ async function loadResponses() {
 
     list.innerHTML = currentSessions.map((s, idx) => {
       const nome = s.respondent_name || "(sem nome)";
-      const tel = s.respondent_phone ? ` • ${escapeHtml(s.respondent_phone)}` : "";
       return `
       <div class="session-card">
         <div class="session-header">
@@ -850,6 +880,11 @@ function handleHashChange() {
     showUserView();
   }
 }
+
+// Clique no cadeado → entra no modo admin
+document.getElementById("adminLock").onclick = () => {
+  window.location.hash = "#admin";
+};
 
 window.addEventListener("hashchange", handleHashChange);
 handleHashChange();
