@@ -13,7 +13,6 @@ app.use(express.json());
 
 // ============================================================
 // ✅ Lê a connection string das variáveis de ambiente
-// (arquivo .env local ou painel do Vercel em produção)
 // ============================================================
 const DATABASE_URL = process.env.DATABASE_URL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
@@ -23,10 +22,9 @@ if (!DATABASE_URL) {
   console.error("\n⚠️  DATABASE_URL não configurada!");
   console.error("   Local: crie um arquivo .env com DATABASE_URL=...");
   console.error("   Vercel: configure em Settings → Environment Variables\n");
-  process.exit(1);
 }
 
-const sql = neon(DATABASE_URL);
+const sql = neon(DATABASE_URL || "");
 
 // ===== ROTAS PÚBLICAS =====
 
@@ -188,14 +186,23 @@ app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
 
 // ===== SERVE O HTML =====
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Rota raiz → entrega o index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// Serve arquivos estáticos da pasta atual
 app.use(express.static(__dirname));
 
+// Exporta pro Vercel (serverless)
 export default app;
 
+// Local: só escuta se NÃO estiver no Vercel
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n✅ API rodando em http://localhost:${PORT}`);
-    console.log(`📝 Formulário: http://localhost:${PORT}/index.html`);
-    console.log(`🔒 Admin:      http://localhost:${PORT}/index.html#admin\n`);
+    console.log(`📝 Formulário: http://localhost:${PORT}/`);
+    console.log(`🔒 Admin:      http://localhost:${PORT}/#admin\n`);
   });
 }
