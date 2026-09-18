@@ -396,7 +396,7 @@ function updateProgress() {
 }
 
 // ============================================================
-// TELA DE IDENTIFICAÇÃO
+// TELA DE IDENTIFICAÇÃO (só nome)
 // ============================================================
 
 function renderIdentifyScreen() {
@@ -411,18 +411,12 @@ function renderIdentifyScreen() {
         <input type="text" id="identifyName" placeholder="Ex: Vinicius Silva" autocomplete="name">
       </div>
 
-      <div class="form-group">
-        <label>Seu WhatsApp *</label>
-        <input type="tel" id="identifyPhone" placeholder="(11) 99999-9999" autocomplete="tel">
-      </div>
-
       <button class="btn btn-primary" id="startBtn">Começar o formulário</button>
       <div class="error" id="identifyError"></div>
     </div>
   `;
 
   const nameInput = document.getElementById("identifyName");
-  const phoneInput = document.getElementById("identifyPhone");
   const startBtn = document.getElementById("startBtn");
   const errorEl = document.getElementById("identifyError");
 
@@ -430,22 +424,16 @@ function renderIdentifyScreen() {
 
   function tryStart() {
     const name = nameInput.value.trim();
-    const phone = phoneInput.value.trim();
 
     if (!name || name.length < 2) {
       errorEl.textContent = "Por favor, digite seu nome completo.";
       return;
     }
-    if (!phone || phone.length < 8) {
-      errorEl.textContent = "Por favor, digite um WhatsApp válido.";
-      return;
-    }
 
-    const cleanPhone = phone.replace(/\D/g, "");
     const cleanName = name.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
     respondent.name = name;
-    respondent.phone = phone;
-    respondent.sessionId = `${cleanName}_${cleanPhone}_${Date.now()}`;
+    respondent.phone = "";
+    respondent.sessionId = `${cleanName}_${Date.now()}`;
 
     current = 0;
     answers = {};
@@ -453,7 +441,7 @@ function renderIdentifyScreen() {
   }
 
   startBtn.onclick = tryStart;
-  phoneInput.addEventListener("keypress", e => {
+  nameInput.addEventListener("keypress", e => {
     if (e.key === "Enter") tryStart();
   });
 }
@@ -469,6 +457,7 @@ function renderQuestion() {
       <div class="done">
         <h2>✅ Obrigado, ${escapeHtml(respondent.name.split(" ")[0])}!</h2>
         <p>Suas respostas foram enviadas com sucesso.</p>
+        ${respondent.phone ? `<p style="font-size:14px;color:#888;margin-top:8px;">Entraremos em contato pelo WhatsApp: <strong style="color:#4ade80;">${escapeHtml(respondent.phone)}</strong></p>` : ''}
         <button class="btn btn-secondary" onclick="location.reload()"
                 style="margin-top:20px;">Responder novamente</button>
       </div>`;
@@ -560,6 +549,13 @@ async function submitAnswer(questionId, answer) {
   const btn = document.getElementById("nextBtn");
   btn.disabled = true;
   btn.textContent = "Enviando...";
+
+  // Se for a última pergunta, tenta capturar WhatsApp da resposta
+  const isLast = current === questions.length - 1;
+  if (isLast) {
+    const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
+    respondent.phone = phoneMatch ? phoneMatch[0].trim() : answer.trim();
+  }
 
   try {
     await fetch(`${API_URL}/api/responses`, {
