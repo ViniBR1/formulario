@@ -12,13 +12,19 @@ app.use(cors());
 app.use(express.json());
 
 // ============================================================
-// 👇👇👇 COLE SUA CONNECTION STRING DO NEON AQUI 👇👇👇
+// ✅ Lê a connection string das variáveis de ambiente
+// (arquivo .env local ou painel do Vercel em produção)
 // ============================================================
-const DATABASE_URL = "postgresql://neondb_owner:npg_TNe9Pmu1xsEt@ep-red-feather-b5ww03pb-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
-// ============================================================
-
-const ADMIN_PASSWORD = "admin123";
+const DATABASE_URL = process.env.DATABASE_URL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const PORT = process.env.PORT || 3000;
+
+if (!DATABASE_URL) {
+  console.error("\n⚠️  DATABASE_URL não configurada!");
+  console.error("   Local: crie um arquivo .env com DATABASE_URL=...");
+  console.error("   Vercel: configure em Settings → Environment Variables\n");
+  process.exit(1);
+}
 
 const sql = neon(DATABASE_URL);
 
@@ -70,7 +76,6 @@ function checkAuth(req, res, next) {
   next();
 }
 
-// Respostas agrupadas por PESSOA (usa nome + telefone como identificador)
 app.get("/api/admin/sessions", checkAuth, async (req, res) => {
   try {
     const rows = await sql`
