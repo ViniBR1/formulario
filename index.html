@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentoria de Contrabaixo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f23;
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { width: 100%; max-width: 780px; margin: 0 auto; }
+  .hidden { display: none !important; }
+
+  .login-screen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 85vh; text-align: center;
+  }
+  .lock-icon { font-size: 64px; margin-bottom: 20px; animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.85; }
+  }
+  .login-screen input {
+    padding: 14px 18px; font-size: 16px; border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: #fff;
+    width: 280px; margin-bottom: 12px; outline: none; text-align: center;
+  }
+  .login-screen input:focus { border-color: #a855f7; }
+
+  .btn {
+    padding: 12px 24px; font-size: 15px; font-weight: 600;
+    border: none; border-radius: 10px; cursor: pointer;
+    font-family: inherit; transition: transform 0.15s, opacity 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-primary { background: linear-gradient(90deg, #6366f1, #a855f7); color: #fff; }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+  .btn-danger { background: #ef4444; color: #fff; padding: 8px 14px; font-size: 13px; }
+
+  .progress {
+    height: 4px; background: rgba(255,255,255,0.1);
+    border-radius: 4px; margin-bottom: 32px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7);
+    width: 0%; transition: width 0.4s ease;
+  }
+  .step { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .step-number {
+    color: #a855f7; font-size: 14px; margin-bottom: 12px;
+    font-weight: 600; letter-spacing: 0.5px;
+  }
+  .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
+  .video-wrapper {
+    position: relative; padding-bottom: 56.25%; height: 0;
+    margin-bottom: 24px; border-radius: 12px;
+    overflow: hidden; background: #000;
+  }
+  .video-wrapper iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; border: none;
+  }
+
+  textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
+    width: 100%; padding: 16px; font-size: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: #fff;
+    font-family: inherit; outline: none; transition: border 0.2s;
+  }
+  textarea:focus, input:focus { border-color: #a855f7; }
+  textarea { resize: vertical; min-height: 100px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 10px; cursor: pointer;
+    transition: all 0.15s; font-size: 16px;
+  }
+  .option:hover {
+    border-color: rgba(168,85,247,0.5);
+    background: rgba(168,85,247,0.08);
+  }
+  .option.selected {
+    border-color: #a855f7;
+    background: rgba(168,85,247,0.2);
+  }
+  .option-letter {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.1);
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .option.selected .option-letter { background: #a855f7; }
+
+  .scale {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center;
+  }
+  .scale-btn {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: #fff; font-size: 18px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .scale-btn:hover {
+    border-color: rgba(168,85,247,0.5);
+    background: rgba(168,85,247,0.08);
+  }
+  .scale-btn.selected {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    border-color: transparent;
+    transform: scale(1.1);
+  }
+
+  .actions { display: flex; gap: 12px; margin-top: 24px; }
+
+  .loading, .empty, .done {
+    text-align: center; font-size: 18px; color: #aaa; padding: 40px 20px;
+  }
+  .done h2 { color: #a855f7; margin-bottom: 12px; font-size: 32px; }
+  .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
+
+  /* Tela de identificação */
+  .identify-screen {
+    max-width: 480px;
+    margin: 60px auto 0;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+  .identify-screen h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .identify-screen p {
+    color: #aaa;
+    margin-bottom: 32px;
+    font-size: 15px;
+  }
+  .identify-screen .form-group {
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  .identify-screen label {
+    display: block;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+  .identify-screen .btn-primary {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  /* ADMIN */
+  .admin-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 24px;
+  }
+  .admin-header h1 { font-size: 24px; }
+  h2 { font-size: 20px; margin: 32px 0 16px; color: #a855f7; }
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 18px; margin-bottom: 14px;
+  }
+  .card-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 12px; margin-bottom: 10px;
+  }
+  .card-question { font-weight: 600; flex: 1; }
+  .card-meta { font-size: 12px; color: #888; margin-top: 4px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
+  .form-group textarea { min-height: 70px; }
+  .form-group select {
+    width: 100%; padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: #fff;
+    font-family: inherit; font-size: 14px;
+  }
+
+  .session-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    transition: border 0.2s;
+  }
+  .session-card:hover { border-color: rgba(168,85,247,0.4); }
+  .session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+  }
+  .session-name {
+    color: #a855f7;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .session-phone {
+    font-size: 13px;
+    color: #4ade80;
+    margin-left: 10px;
+  }
+  .session-date { font-size: 12px; color: #888; display: block; margin-top: 4px; }
+  .session-actions { display: flex; gap: 8px; }
+  .session-answers { display: flex; flex-direction: column; gap: 12px; }
+  .answer-row {
+    padding-left: 12px;
+    border-left: 2px solid rgba(168,85,247,0.3);
+  }
+  .answer-q { font-size: 13px; color: #a855f7; margin-bottom: 4px; }
+  .answer-a { font-size: 15px; color: #fff; word-break: break-word; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="userView">
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div id="app"><div class="loading">Carregando...</div></div>
+  </div>
+
+  <div class="login-screen hidden" id="loginScreen">
+    <div class="lock-icon">🔒</div>
+    <h1 style="margin-bottom:8px;">Área do Administrador</h1>
+    <p style="color:#888;margin-bottom:20px;font-size:14px;">Digite a senha para continuar</p>
+    <input type="password" id="passwordInput" placeholder="Senha">
+    <button class="btn btn-primary" id="loginBtn">Entrar</button>
+    <div class="error" id="loginError"></div>
+    <button class="btn btn-secondary" id="backToFormBtn" style="margin-top:20px;font-size:13px;">
+      ← Voltar ao formulário
+    </button>
+  </div>
+
+  <div id="adminView" class="hidden">
+    <div class="admin-header">
+      <h1>⚙️ Painel Administrativo</h1>
+      <button class="btn btn-secondary" id="logoutBtn">Sair</button>
+    </div>
+
+    <h2>➕ Nova pergunta</h2>
+    <div class="card">
+      <div class="form-group">
+        <label>Texto da pergunta</label>
+        <input type="text" id="newText" placeholder="Ex: Qual seu nível?">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="newType">
+          <option value="text">Resposta aberta</option>
+          <option value="choice">Múltipla escolha</option>
+          <option value="scale">Escala 0 a 10</option>
+        </select>
+      </div>
+      <div class="form-group" id="optionsGroup" style="display:none;">
+        <label>Opções (uma por linha)</label>
+        <textarea id="newOptions" placeholder="Opção 1&#10;Opção 2&#10;Opção 3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Link do vídeo no Google Drive (opcional)</label>
+        <input type="text" id="newVideo" placeholder="https://drive.google.com/file/d/ID/preview">
+      </div>
+      <div class="form-group">
+        <label>Ordem</label>
+        <input type="number" id="newOrder" value="0">
+      </div>
+      <button class="btn btn-primary" id="addBtn">Adicionar pergunta</button>
+    </div>
+
+    <h2>📋 Perguntas cadastradas</h2>
+    <div id="questionsList"><div class="empty">Carregando...</div></div>
+
+    <h2>📨 Respostas recebidas</h2>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" id="refreshBtn">🔄 Atualizar</button>
+      <button class="btn btn-secondary" id="exportCsvBtn">📥 Exportar CSV</button>
+    </div>
+    <div id="responsesList"><div class="empty">Carregando...</div></div>
+  </div>
+
+</div>
+
+<script>
+const API_URL = "";
+const ADMIN_PASSWORD = "admin123";
+
+const userView = document.getElementById("userView");
+const loginScreen = document.getElementById("loginScreen");
+const adminView = document.getElementById("adminView");
+const progressBar = document.getElementById("progressBar");
+const app = document.getElementById("app");
+
+let questions = [];
+let current = 0;
+let answers = {};
+let currentSessions = [];
+
+// Dados da pessoa que está respondendo
+let respondent = {
+  name: "",
+  phone: "",
+  sessionId: ""
+};
+
+const isAdminMode = () => window.location.hash === "#admin";
+
+function extractDriveId(url) {
+  if (!url) return null;
+  const m = url.match(/\/d\/([^/]+)/);
+  return m ? m[1] : null;
+}
+
+function renderVideo(url) {
+  const id = extractDriveId(url);
+  if (!id) return "";
+  return `
+    <div class="video-wrapper">
+      <iframe src="https://drive.google.com/file/d/${id}/preview"
+              allow="autoplay" allowfullscreen></iframe>
+    </div>`;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function updateProgress() {
+  const pct = questions.length ? (current / questions.length) * 100 : 0;
+  progressBar.style.width = pct + "%";
+}
+
+// ============================================================
+// TELA DE IDENTIFICAÇÃO (nome + WhatsApp)
+// ============================================================
+
+function renderIdentifyScreen() {
+  progressBar.style.width = "0%";
+  app.innerHTML = `
+    <div class="identify-screen">
+      <h1>🎸 Mentoria de Contrabaixo</h1>
+      <p>Antes de começar, precisamos te conhecer</p>
+
+      <div class="form-group">
+        <label>Seu nome completo *</label>
+        <input type="text" id="identifyName" placeholder="Ex: Vinicius Silva" autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label>Seu WhatsApp *</label>
+        <input type="tel" id="identifyPhone" placeholder="(11) 99999-9999" autocomplete="tel">
+      </div>
+
+      <button class="btn btn-primary" id="startBtn">Começar o formulário</button>
+      <div class="error" id="identifyError"></div>
+    </div>
+  `;
+
+  const nameInput = document.getElementById("identifyName");
+  const phoneInput = document.getElementById("identifyPhone");
+  const startBtn = document.getElementById("startBtn");
+  const errorEl = document.getElementById("identifyError");
+
+  nameInput.focus();
+
+  function tryStart() {
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (!name || name.length < 2) {
+      errorEl.textContent = "Por favor, digite seu nome completo.";
+      return;
+    }
+    if (!phone || phone.length < 8) {
+      errorEl.textContent = "Por favor, digite um WhatsApp válido.";
+      return;
+    }
+
+    // Cria session_id único combinando nome + telefone (normalizado)
+    const cleanPhone = phone.replace(/\D/g, "");
+    const cleanName = name.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+    respondent.name = name;
+    respondent.phone = phone;
+    respondent.sessionId = `${cleanName}_${cleanPhone}_${Date.now()}`;
+
+    current = 0;
+    answers = {};
+    renderQuestion();
+  }
+
+  startBtn.onclick = tryStart;
+  phoneInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") tryStart();
+  });
+}
+
+// ============================================================
+// FORMULÁRIO (perguntas)
+// ============================================================
+
+function renderQuestion() {
+  if (current >= questions.length) {
+    progressBar.style.width = "100%";
+    app.innerHTML = `
+      <div class="done">
+        <h2>✅ Obrigado, ${escapeHtml(respondent.name.split(" ")[0])}!</h2>
+        <p>Suas respostas foram enviadas com sucesso.</p>
+        <button class="btn btn-secondary" onclick="location.reload()"
+                style="margin-top:20px;">Responder novamente</button>
+      </div>`;
+    return;
+  }
+
+  const q = questions[current];
+  const saved = answers[current] || "";
+
+  let inputHtml = "";
+
+  if (q.type === "choice" && Array.isArray(q.options)) {
+    inputHtml = `<div class="options">` +
+      q.options.map((opt, i) => `
+        <div class="option ${saved === opt ? 'selected' : ''}" data-value="${escapeHtml(opt)}">
+          <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+          <div>${escapeHtml(opt)}</div>
+        </div>
+      `).join("") +
+      `</div>`;
+  } else if (q.type === "scale" && Array.isArray(q.options)) {
+    inputHtml = `<div class="scale">` +
+      q.options.map(v => `
+        <button type="button" class="scale-btn ${saved == v ? 'selected' : ''}"
+                data-value="${v}">${v}</button>
+      `).join("") +
+      `</div>`;
+  } else {
+    inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
+  }
+
+  app.innerHTML = `
+    <div class="step">
+      <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
+      <div class="question">${escapeHtml(q.text)}</div>
+      ${renderVideo(q.video_url)}
+      ${inputHtml}
+      <div class="actions">
+        ${current > 0 ? '<button class="btn btn-secondary" id="prevBtn">Voltar</button>' : ''}
+        <button class="btn btn-primary" id="nextBtn">
+          ${current === questions.length - 1 ? 'Enviar' : 'Próxima'}
+        </button>
+      </div>
+    </div>`;
+
+  updateProgress();
+
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
+
+  if (q.type === "choice") {
+    document.querySelectorAll(".option").forEach(el => {
+      el.onclick = () => {
+        document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+        el.classList.add("selected");
+        answers[current] = el.dataset.value;
+      };
+    });
+  }
+
+  if (q.type === "scale") {
+    document.querySelectorAll(".scale-btn").forEach(el => {
+      el.onclick = () => {
+        document.querySelectorAll(".scale-btn").forEach(o => o.classList.remove("selected"));
+        el.classList.add("selected");
+        answers[current] = el.dataset.value;
+      };
+    });
+  }
+
+  nextBtn.onclick = () => {
+    if (q.type === "text") {
+      answers[current] = document.getElementById("answer").value;
+    }
+    const val = answers[current] || "";
+    if (!val.trim()) { alert("Por favor, responda antes de continuar."); return; }
+    submitAnswer(q.id, val);
+  };
+
+  if (prevBtn) prevBtn.onclick = () => { current--; renderQuestion(); };
+
+  if (q.type === "text") {
+    const ta = document.getElementById("answer");
+    if (ta && !saved) ta.focus();
+  }
+}
+
+async function submitAnswer(questionId, answer) {
+  const btn = document.getElementById("nextBtn");
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+
+  try {
+    await fetch(`${API_URL}/api/responses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question_id: questionId,
+        answer: answer,
+        session_id: respondent.sessionId,
+        respondent_name: respondent.name,
+        respondent_phone: respondent.phone
+      })
+    });
+    current++;
+    renderQuestion();
+  } catch (e) {
+    alert("Erro ao enviar. Tente novamente.");
+    btn.disabled = false;
+    btn.textContent = "Próxima";
+  }
+}
+
+async function initForm() {
+  try {
+    const res = await fetch(`${API_URL}/api/questions`);
+    questions = await res.json();
+    if (!questions.length) {
+      app.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada ainda.</div>';
+      return;
+    }
+    renderIdentifyScreen();
+  } catch (e) {
+    app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
+  }
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+
+const passwordInput = document.getElementById("passwordInput");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+
+loginBtn.onclick = doLogin;
+passwordInput.addEventListener("keypress", e => {
+  if (e.key === "Enter") doLogin();
+});
+
+async function doLogin() {
+  const pass = passwordInput.value;
+  if (!pass) return;
+  try {
+    const res = await fetch(`${API_URL}/api/admin/sessions`, {
+      headers: { "x-admin-password": pass }
+    });
+    if (!res.ok) throw new Error();
+    window.ADMIN_PASS = pass;
+    loginScreen.classList.add("hidden");
+    adminView.classList.remove("hidden");
+    loadQuestions();
+    loadResponses();
+  } catch (e) {
+    loginError.textContent = "Senha incorreta.";
+  }
+}
+
+function authHeaders() {
+  return {
+    "Content-Type": "application/json",
+    "x-admin-password": window.ADMIN_PASS
+  };
+}
+
+document.getElementById("logoutBtn").onclick = () => {
+  window.ADMIN_PASS = null;
+  adminView.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+  passwordInput.value = "";
+  loginError.textContent = "";
+};
+
+document.getElementById("backToFormBtn").onclick = () => {
+  window.location.hash = "";
+};
+
+document.getElementById("newType").onchange = (e) => {
+  document.getElementById("optionsGroup").style.display =
+    e.target.value === "choice" ? "block" : "none";
+};
+
+async function loadQuestions() {
+  const list = document.getElementById("questionsList");
+  try {
+    const res = await fetch(`${API_URL}/api/questions`);
+    const qs = await res.json();
+    if (!qs.length) {
+      list.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada.</div>';
+      return;
+    }
+    list.innerHTML = qs.map(q => `
+      <div class="card">
+        <div class="card-header">
+          <div style="flex:1">
+            <div class="card-question">${escapeHtml(q.text)}</div>
+            <div class="card-meta">
+              Tipo: ${q.type} • Ordem: ${q.order_index}
+              ${q.video_url ? '• 🎬 com vídeo' : ''}
+            </div>
+          </div>
+          <button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Excluir</button>
+        </div>
+      </div>
+    `).join("");
+  } catch (e) {
+    list.innerHTML = '<div class="empty">Erro ao carregar.</div>';
+  }
+}
+
+document.getElementById("addBtn").onclick = async () => {
+  const text = document.getElementById("newText").value.trim();
+  const type = document.getElementById("newType").value;
+  const video_url = document.getElementById("newVideo").value.trim();
+  const order_index = parseInt(document.getElementById("newOrder").value) || 0;
+  const rawOptions = document.getElementById("newOptions").value.trim();
+
+  if (!text) { alert("Digite o texto da pergunta."); return; }
+
+  let options = null;
+  if (type === "choice") {
+    options = rawOptions.split("\n").map(s => s.trim()).filter(Boolean);
+    if (!options.length) { alert("Adicione pelo menos uma opção."); return; }
+  } else if (type === "scale") {
+    options = [0,1,2,3,4,5,6,7,8,9,10];
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/questions`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ text, type, options, video_url, order_index })
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById("newText").value = "";
+    document.getElementById("newVideo").value = "";
+    document.getElementById("newOptions").value = "";
+    document.getElementById("newOrder").value = "0";
+    loadQuestions();
+  } catch (e) {
+    alert("Erro ao adicionar.");
+  }
+};
+
+async function deleteQuestion(id) {
+  if (!confirm("Excluir esta pergunta e todas as respostas dela?")) return;
+  try {
+    await fetch(`${API_URL}/api/admin/questions/${id}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+    loadQuestions();
+    loadResponses();
+  } catch (e) {
+    alert("Erro ao excluir.");
+  }
+}
+
+async function loadResponses() {
+  const list = document.getElementById("responsesList");
+  try {
+    const res = await fetch(`${API_URL}/api/admin/sessions`, {
+      headers: authHeaders()
+    });
+    currentSessions = await res.json();
+    if (!currentSessions.length) {
+      list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
+      return;
+    }
+
+    list.innerHTML = currentSessions.map((s, idx) => {
+      const nome = s.respondent_name || "(sem nome)";
+      const tel = s.respondent_phone ? ` • ${escapeHtml(s.respondent_phone)}` : "";
+      return `
+      <div class="session-card">
+        <div class="session-header">
+          <div>
+            <div class="session-name">👤 ${escapeHtml(nome)}</div>
+            <div class="session-phone">📱 ${escapeHtml(s.respondent_phone || "sem telefone")}</div>
+            <span class="session-date">
+              ${new Date(s.started_at).toLocaleString("pt-BR")}
+            </span>
+          </div>
+          <div class="session-actions">
+            <button class="btn btn-secondary" onclick="copySession(${idx})">
+              📋 Copiar
+            </button>
+            <button class="btn btn-danger" onclick="deleteSession('${s.session_id}')">
+              Excluir
+            </button>
+          </div>
+        </div>
+        <div class="session-answers">
+          ${s.answers.map((a, i) => `
+            <div class="answer-row">
+              <div class="answer-q">${i + 1}. ${escapeHtml(a.question)}</div>
+              <div class="answer-a">${escapeHtml(a.answer || "(vazio)")}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>`;
+    }).join("");
+  } catch (e) {
+    list.innerHTML = '<div class="empty">Erro ao carregar respostas.</div>';
+  }
+}
+
+function copySession(idx) {
+  const s = currentSessions[idx];
+  if (!s) return;
+  let text = `👤 ${s.respondent_name || "(sem nome)"}\n`;
+  if (s.respondent_phone) text += `📱 ${s.respondent_phone}\n`;
+  text += `${new Date(s.started_at).toLocaleString("pt-BR")}\n\n`;
+  s.answers.forEach((a, i) => {
+    text += `${i + 1}. ${a.question}\n→ ${a.answer || "(vazio)"}\n\n`;
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Respostas copiadas!");
+  });
+}
+
+async function deleteSession(sessionId) {
+  if (!confirm("Excluir TODAS as respostas dessa pessoa?")) return;
+  try {
+    await fetch(`${API_URL}/api/admin/sessions/${sessionId}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+    loadResponses();
+  } catch (e) {
+    alert("Erro ao excluir.");
+  }
+}
+
+document.getElementById("exportCsvBtn").onclick = () => {
+  if (!currentSessions.length) {
+    alert("Nenhuma resposta pra exportar.");
+    return;
+  }
+
+  const questionOrder = [];
+  currentSessions.forEach(s => {
+    s.answers.forEach(a => {
+      if (!questionOrder.includes(a.question)) {
+        questionOrder.push(a.question);
+      }
+    });
+  });
+
+  const headers = ["Nome", "WhatsApp", "Data/Hora", ...questionOrder];
+
+  const rows = currentSessions.map(s => {
+    const row = [
+      s.respondent_name || "",
+      s.respondent_phone || "",
+      new Date(s.started_at).toLocaleString("pt-BR")
+    ];
+    questionOrder.forEach(q => {
+      const ans = s.answers.find(a => a.question === q);
+      row.push(ans ? (ans.answer || "") : "");
+    });
+    return row;
+  });
+
+  const csvEscape = (v) => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [
+    headers.map(csvEscape).join(","),
+    ...rows.map(r => r.map(csvEscape).join(","))
+  ].join("\n");
+
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `respostas_mentoria_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("refreshBtn").onclick = () => {
+  loadQuestions();
+  loadResponses();
+};
+
+function showUserView() {
+  adminView.classList.add("hidden");
+  loginScreen.classList.add("hidden");
+  userView.classList.remove("hidden");
+  if (!questions.length) initForm();
+}
+
+function showLoginView() {
+  userView.classList.add("hidden");
+  adminView.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+}
+
+function handleHashChange() {
+  if (isAdminMode()) {
+    if (window.ADMIN_PASS) {
+      userView.classList.add("hidden");
+      loginScreen.classList.add("hidden");
+      adminView.classList.remove("hidden");
+      loadQuestions();
+      loadResponses();
+    } else {
+      showLoginView();
+    }
+  } else {
+    showUserView();
+  }
+}
+
+window.addEventListener("hashchange", handleHashChange);
+handleHashChange();
+</script>
+</body>
+</html>
