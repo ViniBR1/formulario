@@ -41,9 +41,7 @@
     border-color: rgba(168,85,247,0.5);
     transform: scale(1.08);
   }
-  .admin-lock:active {
-    transform: scale(0.95);
-  }
+  .admin-lock:active { transform: scale(0.95); }
 
   .login-screen {
     display: flex; flex-direction: column; align-items: center;
@@ -167,7 +165,6 @@
   .done h2 { color: #a855f7; margin-bottom: 12px; font-size: 32px; }
   .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
 
-  /* Tela de identificação */
   .identify-screen {
     max-width: 480px;
     margin: 60px auto 0;
@@ -204,7 +201,6 @@
     margin-top: 8px;
   }
 
-  /* ADMIN */
   .admin-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 24px;
@@ -275,7 +271,6 @@
 </head>
 <body>
 
-<!-- Cadeado do Admin -->
 <button class="admin-lock" id="adminLock" title="Área do Administrador">🔒</button>
 
 <div class="container">
@@ -303,7 +298,7 @@
       <button class="btn btn-secondary" id="logoutBtn">Sair</button>
     </div>
 
-    <h2>➕ Nova pergunta</h2>
+    <h2 id="formTitle">➕ Nova pergunta</h2>
     <div class="card">
       <div class="form-group">
         <label>Texto da pergunta</label>
@@ -329,7 +324,9 @@
         <label>Ordem</label>
         <input type="number" id="newOrder" value="0">
       </div>
-      <button class="btn btn-primary" id="addBtn">Adicionar pergunta</button>
+      <div>
+        <button class="btn btn-primary" id="addBtn">Adicionar pergunta</button>
+      </div>
     </div>
 
     <h2>📋 Perguntas cadastradas</h2>
@@ -360,11 +357,7 @@ let current = 0;
 let answers = {};
 let currentSessions = [];
 
-let respondent = {
-  name: "",
-  phone: "",
-  sessionId: ""
-};
+let respondent = { name: "", phone: "", sessionId: "" };
 
 const isAdminMode = () => window.location.hash === "#admin";
 
@@ -396,7 +389,7 @@ function updateProgress() {
 }
 
 // ============================================================
-// TELA DE IDENTIFICAÇÃO (só nome)
+// TELA DE IDENTIFICAÇÃO
 // ============================================================
 
 function renderIdentifyScreen() {
@@ -550,7 +543,6 @@ async function submitAnswer(questionId, answer) {
   btn.disabled = true;
   btn.textContent = "Enviando...";
 
-  // Se for a última pergunta, tenta capturar WhatsApp da resposta
   const isLast = current === questions.length - 1;
   if (isLast) {
     const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
@@ -647,6 +639,8 @@ document.getElementById("newType").onchange = (e) => {
     e.target.value === "choice" ? "block" : "none";
 };
 
+// ===== PERGUNTAS =====
+
 async function loadQuestions() {
   const list = document.getElementById("questionsList");
   try {
@@ -666,7 +660,13 @@ async function loadQuestions() {
               ${q.video_url ? '• 🎬 com vídeo' : ''}
             </div>
           </div>
-          <button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Excluir</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;"
+                    onclick='editQuestionById(${q.id})'>
+              ✏️ Editar
+            </button>
+            <button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Excluir</button>
+          </div>
         </div>
       </div>
     `).join("");
@@ -675,12 +675,71 @@ async function loadQuestions() {
   }
 }
 
+function editQuestionById(id) {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  editQuestion(q);
+}
+
+function editQuestion(q) {
+  document.getElementById("formTitle").textContent = "✏️ Editando pergunta";
+  document.getElementById("newText").value = q.text || "";
+  document.getElementById("newType").value = q.type || "text";
+  document.getElementById("newVideo").value = q.video_url || "";
+  document.getElementById("newOrder").value = q.order_index || 0;
+
+  if (q.type === "choice" && Array.isArray(q.options)) {
+    document.getElementById("newOptions").value = q.options.join("\n");
+    document.getElementById("optionsGroup").style.display = "block";
+  } else {
+    document.getElementById("newOptions").value = "";
+    document.getElementById("optionsGroup").style.display = "none";
+  }
+
+  document.getElementById("formTitle").scrollIntoView({ behavior: "smooth" });
+
+  const addBtn = document.getElementById("addBtn");
+  addBtn.textContent = "💾 Salvar edição";
+  addBtn.dataset.editingId = q.id;
+
+  let cancelBtn = document.getElementById("cancelEditBtn");
+  if (!cancelBtn) {
+    cancelBtn = document.createElement("button");
+    cancelBtn.id = "cancelEditBtn";
+    cancelBtn.className = "btn btn-secondary";
+    cancelBtn.style.marginLeft = "10px";
+    cancelBtn.textContent = "✕ Cancelar";
+    cancelBtn.onclick = resetForm;
+    addBtn.parentNode.appendChild(cancelBtn);
+  }
+
+  document.getElementById("newText").focus();
+}
+
+function resetForm() {
+  document.getElementById("formTitle").textContent = "➕ Nova pergunta";
+  document.getElementById("newText").value = "";
+  document.getElementById("newType").value = "text";
+  document.getElementById("newVideo").value = "";
+  document.getElementById("newOptions").value = "";
+  document.getElementById("newOrder").value = "0";
+  document.getElementById("optionsGroup").style.display = "none";
+
+  const addBtn = document.getElementById("addBtn");
+  addBtn.textContent = "Adicionar pergunta";
+  delete addBtn.dataset.editingId;
+
+  const cancelBtn = document.getElementById("cancelEditBtn");
+  if (cancelBtn) cancelBtn.remove();
+}
+
 document.getElementById("addBtn").onclick = async () => {
   const text = document.getElementById("newText").value.trim();
   const type = document.getElementById("newType").value;
   const video_url = document.getElementById("newVideo").value.trim();
   const order_index = parseInt(document.getElementById("newOrder").value) || 0;
   const rawOptions = document.getElementById("newOptions").value.trim();
+  const editingId = document.getElementById("addBtn").dataset.editingId;
 
   if (!text) { alert("Digite o texto da pergunta."); return; }
 
@@ -692,20 +751,25 @@ document.getElementById("addBtn").onclick = async () => {
     options = [0,1,2,3,4,5,6,7,8,9,10];
   }
 
+  const payload = { text, type, options, video_url, order_index };
+  const isEditing = !!editingId;
+  const url = isEditing
+    ? `${API_URL}/api/admin/questions/${editingId}`
+    : `${API_URL}/api/admin/questions`;
+  const method = isEditing ? "PUT" : "POST";
+
   try {
-    const res = await fetch(`${API_URL}/api/admin/questions`, {
-      method: "POST",
+    const res = await fetch(url, {
+      method,
       headers: authHeaders(),
-      body: JSON.stringify({ text, type, options, video_url, order_index })
+      body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error();
-    document.getElementById("newText").value = "";
-    document.getElementById("newVideo").value = "";
-    document.getElementById("newOptions").value = "";
-    document.getElementById("newOrder").value = "0";
+
+    resetForm();
     loadQuestions();
   } catch (e) {
-    alert("Erro ao adicionar.");
+    alert(isEditing ? "Erro ao salvar edição." : "Erro ao adicionar.");
   }
 };
 
@@ -722,6 +786,8 @@ async function deleteQuestion(id) {
     alert("Erro ao excluir.");
   }
 }
+
+// ===== RESPOSTAS =====
 
 async function loadResponses() {
   const list = document.getElementById("responsesList");
@@ -848,6 +914,8 @@ document.getElementById("refreshBtn").onclick = () => {
   loadResponses();
 };
 
+// ===== NAVEGAÇÃO =====
+
 function showUserView() {
   adminView.classList.add("hidden");
   loginScreen.classList.add("hidden");
@@ -877,7 +945,6 @@ function handleHashChange() {
   }
 }
 
-// Clique no cadeado → entra no modo admin
 document.getElementById("adminLock").onclick = () => {
   window.location.hash = "#admin";
 };

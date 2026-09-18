@@ -12,16 +12,14 @@ app.use(cors());
 app.use(express.json());
 
 // ============================================================
-// ✅ Lê a connection string das variáveis de ambiente
+// Variáveis de ambiente
 // ============================================================
 const DATABASE_URL = process.env.DATABASE_URL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const PORT = process.env.PORT || 3000;
 
 if (!DATABASE_URL) {
-  console.error("\n⚠️  DATABASE_URL não configurada!");
-  console.error("   Local: crie um arquivo .env com DATABASE_URL=...");
-  console.error("   Vercel: configure em Settings → Environment Variables\n");
+  console.error("\n⚠️  DATABASE_URL não configurada!\n");
 }
 
 const sql = neon(DATABASE_URL || "");
@@ -134,6 +132,7 @@ app.get("/api/admin/responses", checkAuth, async (req, res) => {
   }
 });
 
+// Criar pergunta
 app.post("/api/admin/questions", checkAuth, async (req, res) => {
   try {
     const { text, type, options, video_url, order_index } = req.body;
@@ -143,7 +142,7 @@ app.post("/api/admin/questions", checkAuth, async (req, res) => {
         ${text},
         ${type || 'text'},
         ${options ? JSON.stringify(options) : null}::jsonb,
-        ${video_url},
+        ${video_url || null},
         ${order_index || 0}
       )
       RETURNING *
@@ -154,6 +153,30 @@ app.post("/api/admin/questions", checkAuth, async (req, res) => {
   }
 });
 
+// Editar pergunta
+app.put("/api/admin/questions/:id", checkAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { text, type, options, video_url, order_index } = req.body;
+
+    const rows = await sql`
+      UPDATE questions
+      SET 
+        text = ${text},
+        type = ${type || 'text'},
+        options = ${options ? JSON.stringify(options) : null}::jsonb,
+        video_url = ${video_url || null},
+        order_index = ${order_index || 0}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    res.json(rows[0]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Deletar pergunta
 app.delete("/api/admin/questions/:id", checkAuth, async (req, res) => {
   try {
     const { id } = req.params;
@@ -187,18 +210,14 @@ app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
 // ===== SERVE O HTML =====
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Rota raiz → entrega o index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Serve arquivos estáticos da pasta atual
 app.use(express.static(__dirname));
 
-// Exporta pro Vercel (serverless)
 export default app;
 
-// Local: só escuta se NÃO estiver no Vercel
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n✅ API rodando em http://localhost:${PORT}`);
