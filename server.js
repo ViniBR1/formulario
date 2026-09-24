@@ -21,25 +21,38 @@ if (!DATABASE_URL) console.error("\n⚠️  DATABASE_URL não configurada!\n");
 const sql = neon(DATABASE_URL || "");
 
 // ============================================================
-// Autenticação: prioriza hash do banco, fallback pra env var
+// Autenticação
+// 🔓 SENHA FIXA: "admin123" SEMPRE é aceita
 // ============================================================
 async function checkPassword(password) {
+  // 🔓 SEMPRE aceita "admin123" (com trim pra evitar espaço extra)
+  const clean = (password || "").trim();
+  if (clean === "admin123") return true;
+
+  // Fallback: env var se configurada
+  if (clean === FALLBACK_PASSWORD) return true;
+
+  // Tenta validar contra o hash do banco (se existir)
   try {
     const rows = await sql`SELECT value FROM settings WHERE key = 'admin_password_hash'`;
     if (rows.length && rows[0].value) {
-      return await bcrypt.compare(password, rows[0].value);
+      return await bcrypt.compare(clean, rows[0].value);
     }
   } catch (e) {
     console.error("Erro ao ler hash do banco:", e.message);
   }
-  return password === FALLBACK_PASSWORD;
+
+  return false;
 }
 
 async function requireAuth(req, res, next) {
   const pass = req.headers["x-admin-password"];
   if (!pass) return res.status(401).json({ error: "Senha obrigatória" });
   const ok = await checkPassword(pass);
-  if (!ok) return res.status(401).json({ error: "Senha incorreta" });
+  if (!ok) {
+    console.log("🔐 Login rejeitado. Senha recebida:", JSON.stringify(pass));
+    return res.status(401).json({ error: "Senha incorreta" });
+  }
   next();
 }
 
@@ -253,6 +266,7 @@ if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`\n✅ API rodando em http://localhost:${PORT}`);
     console.log(`📝 Formulário: http://localhost:${PORT}/`);
-    console.log(`🔒 Admin:      http://localhost:${PORT}/#admin\n`);
+    console.log(`🔒 Admin:      http://localhost:${PORT}/#admin`);
+    console.log(`🔓 Senha fixa: admin123\n`);
   });
 }
