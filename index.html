@@ -8,40 +8,25 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-    background: #0f0f23;
-    color: #fff;
-    min-height: 100vh;
-    padding: 20px;
+    background: #0f0f23; color: #fff; min-height: 100vh; padding: 20px;
   }
   .container { width: 100%; max-width: 780px; margin: 0 auto; }
   .hidden { display: none !important; }
 
-  /* ===== CADEADO DO ADMIN ===== */
   .admin-lock {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    position: fixed; top: 20px; right: 20px;
+    width: 44px; height: 44px; border-radius: 12px;
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
-    color: #a855f7;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    z-index: 100;
-    backdrop-filter: blur(10px);
+    color: #a855f7; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; z-index: 100; backdrop-filter: blur(10px);
   }
   .admin-lock:hover {
     background: rgba(168,85,247,0.15);
     border-color: rgba(168,85,247,0.5);
     transform: scale(1.08);
   }
-  .admin-lock:active { transform: scale(0.95); }
 
   .login-screen {
     display: flex; flex-direction: column; align-items: center;
@@ -91,12 +76,10 @@
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
   .video-wrapper {
     position: relative; padding-bottom: 56.25%; height: 0;
-    margin-bottom: 24px; border-radius: 12px;
-    overflow: hidden; background: #000;
+    margin-bottom: 24px; border-radius: 12px; overflow: hidden; background: #000;
   }
   .video-wrapper iframe {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; border: none;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
   }
 
   textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
@@ -112,8 +95,7 @@
   .options { display: flex; flex-direction: column; gap: 10px; }
   .option {
     display: flex; align-items: center; gap: 14px;
-    padding: 16px 20px;
-    background: rgba(255,255,255,0.05);
+    padding: 16px 20px; background: rgba(255,255,255,0.05);
     border: 2px solid rgba(255,255,255,0.1);
     border-radius: 10px; cursor: pointer;
     transition: all 0.15s; font-size: 16px;
@@ -122,10 +104,7 @@
     border-color: rgba(168,85,247,0.5);
     background: rgba(168,85,247,0.08);
   }
-  .option.selected {
-    border-color: #a855f7;
-    background: rgba(168,85,247,0.2);
-  }
+  .option.selected { border-color: #a855f7; background: rgba(168,85,247,0.2); }
   .option-letter {
     width: 28px; height: 28px; border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
@@ -134,18 +113,13 @@
   }
   .option.selected .option-letter { background: #a855f7; }
 
-  .scale {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    justify-content: center;
-  }
+  .scale { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .scale-btn {
-    width: 56px; height: 56px;
-    border-radius: 12px;
+    width: 56px; height: 56px; border-radius: 12px;
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(255,255,255,0.1);
     color: #fff; font-size: 18px; font-weight: 700;
-    cursor: pointer; transition: all 0.15s;
-    font-family: inherit;
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
   }
   .scale-btn:hover {
     border-color: rgba(168,85,247,0.5);
@@ -153,8 +127,7 @@
   }
   .scale-btn.selected {
     background: linear-gradient(135deg, #6366f1, #a855f7);
-    border-color: transparent;
-    transform: scale(1.1);
+    border-color: transparent; transform: scale(1.1);
   }
 
   .actions { display: flex; gap: 12px; margin-top: 24px; }
@@ -166,41 +139,54 @@
   .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
 
   .identify-screen {
-    max-width: 480px;
-    margin: 60px auto 0;
-    text-align: center;
-    animation: fadeIn 0.4s ease;
+    max-width: 480px; margin: 60px auto 0;
+    text-align: center; animation: fadeIn 0.4s ease;
   }
   .identify-screen h1 {
-    font-size: 28px;
-    margin-bottom: 8px;
+    font-size: 28px; margin-bottom: 8px;
     background: linear-gradient(90deg, #6366f1, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .identify-screen p {
-    color: #aaa;
-    margin-bottom: 32px;
-    font-size: 15px;
-  }
-  .identify-screen .form-group {
-    text-align: left;
-    margin-bottom: 16px;
-  }
+  .identify-screen p { color: #aaa; margin-bottom: 32px; font-size: 15px; }
+  .identify-screen .form-group { text-align: left; margin-bottom: 16px; }
   .identify-screen label {
-    display: block;
-    font-size: 13px;
-    color: #aaa;
-    margin-bottom: 6px;
+    display: block; font-size: 13px; color: #aaa; margin-bottom: 6px;
   }
   .identify-screen .btn-primary {
-    width: 100%;
-    padding: 16px;
-    font-size: 16px;
-    margin-top: 8px;
+    width: 100%; padding: 16px; font-size: 16px; margin-top: 8px;
   }
 
+  /* ===== TELA DE ESCOLHA ===== */
+  .choice-screen { text-align: center; padding: 40px 0; animation: fadeIn 0.4s ease; }
+  .choice-screen h1 {
+    font-size: 34px; margin-bottom: 8px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .choice-screen p { color: #aaa; margin-bottom: 36px; font-size: 16px; }
+  .choice-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; max-width: 640px; margin: 0 auto;
+  }
+  @media (max-width: 560px) { .choice-cards { grid-template-columns: 1fr; } }
+  .choice-card {
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 32px 22px;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .choice-card:hover {
+    border-color: rgba(168,85,247,0.6);
+    background: rgba(168,85,247,0.08);
+    transform: translateY(-4px);
+  }
+  .choice-card .icon { font-size: 44px; margin-bottom: 12px; }
+  .choice-card h3 { font-size: 19px; margin-bottom: 8px; color: #fff; }
+  .choice-card p { font-size: 13px; color: #999; margin: 0; line-height: 1.5; }
+
+  /* ===== ADMIN ===== */
   .admin-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 24px;
@@ -232,41 +218,49 @@
   .session-card {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 16px;
-    transition: border 0.2s;
+    border-radius: 12px; padding: 18px;
+    margin-bottom: 16px; transition: border 0.2s;
   }
   .session-card:hover { border-color: rgba(168,85,247,0.4); }
   .session-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 12px; padding-bottom: 12px;
+    margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);
     flex-wrap: wrap;
   }
-  .session-name {
-    color: #a855f7;
-    font-size: 17px;
-    font-weight: 700;
-  }
-  .session-phone {
-    font-size: 13px;
-    color: #4ade80;
-    margin-left: 10px;
-  }
+  .session-name { color: #a855f7; font-size: 17px; font-weight: 700; }
+  .session-phone { font-size: 13px; color: #4ade80; margin-left: 10px; }
   .session-date { font-size: 12px; color: #888; display: block; margin-top: 4px; }
   .session-actions { display: flex; gap: 8px; }
   .session-answers { display: flex; flex-direction: column; gap: 12px; }
-  .answer-row {
-    padding-left: 12px;
-    border-left: 2px solid rgba(168,85,247,0.3);
-  }
+  .answer-row { padding-left: 12px; border-left: 2px solid rgba(168,85,247,0.3); }
   .answer-q { font-size: 13px; color: #a855f7; margin-bottom: 4px; }
   .answer-a { font-size: 15px; color: #fff; word-break: break-word; }
+
+  /* ===== BADGES / FILTROS ===== */
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .badge-gps { background: rgba(59,130,246,0.2); color: #60a5fa; }
+  .badge-mentoria { background: rgba(168,85,247,0.2); color: #c084fc; }
+  .badge-both { background: rgba(74,222,128,0.15); color: #4ade80; }
+
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-tab {
+    padding: 8px 16px; border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ccc; cursor: pointer; font-size: 13px;
+    font-family: inherit; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .filter-tab:hover { border-color: rgba(168,85,247,0.4); }
+  .filter-tab.active {
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    border-color: transparent; color: #fff;
+  }
 </style>
 </head>
 <body>
@@ -298,8 +292,38 @@
       <button class="btn btn-secondary" id="logoutBtn">Sair</button>
     </div>
 
+    <h2>⚙️ Configurações do Site</h2>
+    <div class="card">
+      <div class="form-group">
+        <label>🔗 Link de checkout do GPS do Baixitas (Hotmart)</label>
+        <input type="text" id="cfgGpsCheckout" placeholder="https://pay.hotmart.com/...">
+      </div>
+      <div class="form-group">
+        <label>🔗 Link de checkout da Mentoria Online (Hotmart)</label>
+        <input type="text" id="cfgMentoriaCheckout" placeholder="https://pay.hotmart.com/...">
+      </div>
+      <div class="form-group">
+        <label>📝 Descrição mostrada no card da Mentoria Online</label>
+        <textarea id="cfgMentoriaDesc" placeholder="Aulas individuais, ao vivo..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>📝 Descrição mostrada no card do GPS do Baixitas</label>
+        <textarea id="cfgGpsDesc" placeholder="Descubra seu nível e receba o acesso..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="saveSettingsBtn">💾 Salvar configurações</button>
+      <span id="settingsFeedback" style="margin-left:12px;color:#4ade80;font-size:14px;"></span>
+    </div>
+
     <h2 id="formTitle">➕ Nova pergunta</h2>
     <div class="card">
+      <div class="form-group">
+        <label>Produto</label>
+        <select id="newProduct">
+          <option value="both">Aparece nos dois (GPS + Mentoria)</option>
+          <option value="gps">Só no GPS do Baixitas</option>
+          <option value="mentoria">Só na Mentoria Online</option>
+        </select>
+      </div>
       <div class="form-group">
         <label>Texto da pergunta</label>
         <input type="text" id="newText" placeholder="Ex: Qual seu nível?">
@@ -337,6 +361,13 @@
       <button class="btn btn-secondary" id="refreshBtn">🔄 Atualizar</button>
       <button class="btn btn-secondary" id="exportCsvBtn">📥 Exportar CSV</button>
     </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">Todas</button>
+      <button class="filter-tab" data-filter="gps">🧭 GPS do Baixitas</button>
+      <button class="filter-tab" data-filter="mentoria">🎓 Mentoria Online</button>
+    </div>
+
     <div id="responsesList"><div class="empty">Carregando...</div></div>
   </div>
 
@@ -344,7 +375,6 @@
 
 <script>
 const API_URL = "";
-const ADMIN_PASSWORD = "admin123";
 
 const userView = document.getElementById("userView");
 const loginScreen = document.getElementById("loginScreen");
@@ -356,10 +386,17 @@ let questions = [];
 let current = 0;
 let answers = {};
 let currentSessions = [];
+let currentFilter = "all";
 
+let settings = {};
+let selectedProduct = null; // "gps" | "mentoria"
 let respondent = { name: "", phone: "", sessionId: "" };
 
 const isAdminMode = () => window.location.hash === "#admin";
+
+// ============================================================
+// HELPERS
+// ============================================================
 
 function extractDriveId(url) {
   if (!url) return null;
@@ -388,15 +425,72 @@ function updateProgress() {
   progressBar.style.width = pct + "%";
 }
 
+function productBadge(product) {
+  if (product === "gps") return '<span class="badge badge-gps">🧭 GPS</span>';
+  if (product === "mentoria") return '<span class="badge badge-mentoria">🎓 Mentoria</span>';
+  return '<span class="badge badge-both">🌐 Ambos</span>';
+}
+
 // ============================================================
-// TELA DE IDENTIFICAÇÃO
+// TELA DE ESCOLHA
+// ============================================================
+
+function renderChoiceScreen() {
+  progressBar.style.width = "0%";
+  app.innerHTML = `
+    <div class="choice-screen">
+      <h1>🎸 Bem-vindo!</h1>
+      <p>Escolha por onde quer começar</p>
+      <div class="choice-cards">
+        <div class="choice-card" data-product="mentoria">
+          <div class="icon">🎓</div>
+          <h3>Mentoria Online</h3>
+          <p>${escapeHtml(settings.mentoria_description || "Aulas individuais de contrabaixo online")}</p>
+        </div>
+        <div class="choice-card" data-product="gps">
+          <div class="icon">🧭</div>
+          <h3>GPS do Baixitas</h3>
+          <p>${escapeHtml(settings.gps_description || "Responda o questionário e descubra seu nível")}</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll(".choice-card").forEach(card => {
+    card.onclick = () => {
+      selectedProduct = card.dataset.product;
+      loadQuestionsForProduct(selectedProduct);
+    };
+  });
+}
+
+async function loadQuestionsForProduct(product) {
+  app.innerHTML = '<div class="loading">Carregando...</div>';
+  try {
+    const res = await fetch(`${API_URL}/api/questions?product=${product}`);
+    questions = await res.json();
+    if (!questions.length) {
+      app.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada para este formulário.</div>';
+      return;
+    }
+    current = 0;
+    answers = {};
+    renderIdentifyScreen();
+  } catch (e) {
+    app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
+  }
+}
+
+// ============================================================
+// IDENTIFICAÇÃO
 // ============================================================
 
 function renderIdentifyScreen() {
-  progressBar.style.width = "0%";
+  updateProgress();
+  const isGps = selectedProduct === "gps";
   app.innerHTML = `
     <div class="identify-screen">
-      <h1>🎸 Mentoria de Contrabaixo</h1>
+      <h1>${isGps ? "🧭 GPS do Baixitas" : "🎓 Mentoria Online"}</h1>
       <p>Antes de começar, precisamos te conhecer</p>
 
       <div class="form-group">
@@ -406,6 +500,10 @@ function renderIdentifyScreen() {
 
       <button class="btn btn-primary" id="startBtn">Começar o formulário</button>
       <div class="error" id="identifyError"></div>
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-secondary" id="backChoiceBtn">← Voltar</button>
+      </div>
     </div>
   `;
 
@@ -417,26 +515,22 @@ function renderIdentifyScreen() {
 
   function tryStart() {
     const name = nameInput.value.trim();
-
     if (!name || name.length < 2) {
       errorEl.textContent = "Por favor, digite seu nome completo.";
       return;
     }
-
     const cleanName = name.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
     respondent.name = name;
     respondent.phone = "";
-    respondent.sessionId = `${cleanName}_${Date.now()}`;
-
+    respondent.sessionId = `${selectedProduct}_${cleanName}_${Date.now()}`;
     current = 0;
     answers = {};
     renderQuestion();
   }
 
   startBtn.onclick = tryStart;
-  nameInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") tryStart();
-  });
+  nameInput.addEventListener("keypress", e => { if (e.key === "Enter") tryStart(); });
+  document.getElementById("backChoiceBtn").onclick = renderChoiceScreen;
 }
 
 // ============================================================
@@ -446,14 +540,34 @@ function renderIdentifyScreen() {
 function renderQuestion() {
   if (current >= questions.length) {
     progressBar.style.width = "100%";
+
+    const checkoutUrl = selectedProduct === "gps"
+      ? settings.gps_checkout_url
+      : settings.mentoria_checkout_url;
+
+    const redirecting = !!checkoutUrl;
+
     app.innerHTML = `
       <div class="done">
         <h2>✅ Obrigado, ${escapeHtml(respondent.name.split(" ")[0])}!</h2>
         <p>Suas respostas foram enviadas com sucesso.</p>
-        ${respondent.phone ? `<p style="font-size:14px;color:#888;margin-top:8px;">Entraremos em contato pelo WhatsApp: <strong style="color:#4ade80;">${escapeHtml(respondent.phone)}</strong></p>` : ''}
-        <button class="btn btn-secondary" onclick="location.reload()"
-                style="margin-top:20px;">Responder novamente</button>
+        ${redirecting
+          ? `<p style="margin-top:20px;color:#a855f7;font-weight:600;">
+               Redirecionando para o checkout...
+             </p>
+             <p style="font-size:13px;color:#888;margin-top:10px;">
+               Se não for redirecionado,
+               <a href="${escapeHtml(checkoutUrl)}" style="color:#a855f7;">clique aqui</a>.
+             </p>`
+          : `<p style="margin-top:20px;color:#ef4444;font-size:14px;">
+               Link de checkout ainda não configurado.
+             </p>`
+        }
       </div>`;
+
+    if (redirecting) {
+      setTimeout(() => { window.location.href = checkoutUrl; }, 1800);
+    }
     return;
   }
 
@@ -461,7 +575,6 @@ function renderQuestion() {
   const saved = answers[current] || "";
 
   let inputHtml = "";
-
   if (q.type === "choice" && Array.isArray(q.options)) {
     inputHtml = `<div class="options">` +
       q.options.map((opt, i) => `
@@ -469,22 +582,22 @@ function renderQuestion() {
           <div class="option-letter">${String.fromCharCode(65 + i)}</div>
           <div>${escapeHtml(opt)}</div>
         </div>
-      `).join("") +
-      `</div>`;
+      `).join("") + `</div>`;
   } else if (q.type === "scale" && Array.isArray(q.options)) {
     inputHtml = `<div class="scale">` +
       q.options.map(v => `
         <button type="button" class="scale-btn ${saved == v ? 'selected' : ''}"
                 data-value="${v}">${v}</button>
-      `).join("") +
-      `</div>`;
+      `).join("") + `</div>`;
   } else {
     inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
   }
 
   app.innerHTML = `
     <div class="step">
-      <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
+      <div class="step-number">
+        ${productBadge(selectedProduct)} &nbsp; • &nbsp; PERGUNTA ${current + 1} DE ${questions.length}
+      </div>
       <div class="question">${escapeHtml(q.text)}</div>
       ${renderVideo(q.video_url)}
       ${inputHtml}
@@ -522,9 +635,7 @@ function renderQuestion() {
   }
 
   nextBtn.onclick = () => {
-    if (q.type === "text") {
-      answers[current] = document.getElementById("answer").value;
-    }
+    if (q.type === "text") answers[current] = document.getElementById("answer").value;
     const val = answers[current] || "";
     if (!val.trim()) { alert("Por favor, responda antes de continuar."); return; }
     submitAnswer(q.id, val);
@@ -543,10 +654,11 @@ async function submitAnswer(questionId, answer) {
   btn.disabled = true;
   btn.textContent = "Enviando...";
 
+  // Se for a última pergunta, tenta capturar um telefone
   const isLast = current === questions.length - 1;
   if (isLast) {
     const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
-    respondent.phone = phoneMatch ? phoneMatch[0].trim() : answer.trim();
+    if (phoneMatch) respondent.phone = phoneMatch[0].trim();
   }
 
   try {
@@ -558,7 +670,8 @@ async function submitAnswer(questionId, answer) {
         answer: answer,
         session_id: respondent.sessionId,
         respondent_name: respondent.name,
-        respondent_phone: respondent.phone
+        respondent_phone: respondent.phone,
+        product: selectedProduct
       })
     });
     current++;
@@ -570,22 +683,22 @@ async function submitAnswer(questionId, answer) {
   }
 }
 
+// ============================================================
+// INICIALIZAÇÃO DO FORM
+// ============================================================
+
 async function initForm() {
   try {
-    const res = await fetch(`${API_URL}/api/questions`);
-    questions = await res.json();
-    if (!questions.length) {
-      app.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada ainda.</div>';
-      return;
-    }
-    renderIdentifyScreen();
+    const sRes = await fetch(`${API_URL}/api/settings`);
+    settings = await sRes.json();
+    renderChoiceScreen();
   } catch (e) {
     app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
   }
 }
 
 // ============================================================
-// ADMIN
+// ADMIN — LOGIN
 // ============================================================
 
 const passwordInput = document.getElementById("passwordInput");
@@ -593,9 +706,7 @@ const loginBtn = document.getElementById("loginBtn");
 const loginError = document.getElementById("loginError");
 
 loginBtn.onclick = doLogin;
-passwordInput.addEventListener("keypress", e => {
-  if (e.key === "Enter") doLogin();
-});
+passwordInput.addEventListener("keypress", e => { if (e.key === "Enter") doLogin(); });
 
 async function doLogin() {
   const pass = passwordInput.value;
@@ -608,6 +719,7 @@ async function doLogin() {
     window.ADMIN_PASS = pass;
     loginScreen.classList.add("hidden");
     adminView.classList.remove("hidden");
+    loadSettings();
     loadQuestions();
     loadResponses();
   } catch (e) {
@@ -630,16 +742,61 @@ document.getElementById("logoutBtn").onclick = () => {
   loginError.textContent = "";
 };
 
-document.getElementById("backToFormBtn").onclick = () => {
-  window.location.hash = "";
-};
+document.getElementById("backToFormBtn").onclick = () => { window.location.hash = ""; };
 
 document.getElementById("newType").onchange = (e) => {
   document.getElementById("optionsGroup").style.display =
     e.target.value === "choice" ? "block" : "none";
 };
 
-// ===== PERGUNTAS =====
+// ============================================================
+// ADMIN — SETTINGS
+// ============================================================
+
+async function loadSettings() {
+  try {
+    const res = await fetch(`${API_URL}/api/settings`);
+    const s = await res.json();
+    document.getElementById("cfgGpsCheckout").value = s.gps_checkout_url || "";
+    document.getElementById("cfgMentoriaCheckout").value = s.mentoria_checkout_url || "";
+    document.getElementById("cfgMentoriaDesc").value = s.mentoria_description || "";
+    document.getElementById("cfgGpsDesc").value = s.gps_description || "";
+  } catch (e) {
+    console.error("Erro ao carregar settings", e);
+  }
+}
+
+document.getElementById("saveSettingsBtn").onclick = async () => {
+  const btn = document.getElementById("saveSettingsBtn");
+  const fb = document.getElementById("settingsFeedback");
+  btn.disabled = true;
+  fb.textContent = "";
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/settings`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({
+        gps_checkout_url: document.getElementById("cfgGpsCheckout").value.trim(),
+        mentoria_checkout_url: document.getElementById("cfgMentoriaCheckout").value.trim(),
+        mentoria_description: document.getElementById("cfgMentoriaDesc").value.trim(),
+        gps_description: document.getElementById("cfgGpsDesc").value.trim()
+      })
+    });
+    if (!res.ok) throw new Error();
+    fb.textContent = "✅ Salvo!";
+    setTimeout(() => { fb.textContent = ""; }, 2500);
+  } catch (e) {
+    fb.style.color = "#ef4444";
+    fb.textContent = "Erro ao salvar";
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+// ============================================================
+// ADMIN — PERGUNTAS
+// ============================================================
 
 async function loadQuestions() {
   const list = document.getElementById("questionsList");
@@ -654,7 +811,9 @@ async function loadQuestions() {
       <div class="card">
         <div class="card-header">
           <div style="flex:1">
-            <div class="card-question">${escapeHtml(q.text)}</div>
+            <div class="card-question">
+              ${productBadge(q.product)} ${escapeHtml(q.text)}
+            </div>
             <div class="card-meta">
               Tipo: ${q.type} • Ordem: ${q.order_index}
               ${q.video_url ? '• 🎬 com vídeo' : ''}
@@ -670,13 +829,14 @@ async function loadQuestions() {
         </div>
       </div>
     `).join("");
+    window.__allQuestions = qs;
   } catch (e) {
     list.innerHTML = '<div class="empty">Erro ao carregar.</div>';
   }
 }
 
 function editQuestionById(id) {
-  const q = questions.find(x => x.id === id);
+  const q = (window.__allQuestions || []).find(x => x.id === id);
   if (!q) return;
   editQuestion(q);
 }
@@ -687,6 +847,7 @@ function editQuestion(q) {
   document.getElementById("newType").value = q.type || "text";
   document.getElementById("newVideo").value = q.video_url || "";
   document.getElementById("newOrder").value = q.order_index || 0;
+  document.getElementById("newProduct").value = q.product || "both";
 
   if (q.type === "choice" && Array.isArray(q.options)) {
     document.getElementById("newOptions").value = q.options.join("\n");
@@ -723,6 +884,7 @@ function resetForm() {
   document.getElementById("newVideo").value = "";
   document.getElementById("newOptions").value = "";
   document.getElementById("newOrder").value = "0";
+  document.getElementById("newProduct").value = "both";
   document.getElementById("optionsGroup").style.display = "none";
 
   const addBtn = document.getElementById("addBtn");
@@ -739,6 +901,7 @@ document.getElementById("addBtn").onclick = async () => {
   const video_url = document.getElementById("newVideo").value.trim();
   const order_index = parseInt(document.getElementById("newOrder").value) || 0;
   const rawOptions = document.getElementById("newOptions").value.trim();
+  const product = document.getElementById("newProduct").value;
   const editingId = document.getElementById("addBtn").dataset.editingId;
 
   if (!text) { alert("Digite o texto da pergunta."); return; }
@@ -751,7 +914,7 @@ document.getElementById("addBtn").onclick = async () => {
     options = [0,1,2,3,4,5,6,7,8,9,10];
   }
 
-  const payload = { text, type, options, video_url, order_index };
+  const payload = { text, type, options, video_url, order_index, product };
   const isEditing = !!editingId;
   const url = isEditing
     ? `${API_URL}/api/admin/questions/${editingId}`
@@ -760,12 +923,9 @@ document.getElementById("addBtn").onclick = async () => {
 
   try {
     const res = await fetch(url, {
-      method,
-      headers: authHeaders(),
-      body: JSON.stringify(payload)
+      method, headers: authHeaders(), body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error();
-
     resetForm();
     loadQuestions();
   } catch (e) {
@@ -777,8 +937,7 @@ async function deleteQuestion(id) {
   if (!confirm("Excluir esta pergunta e todas as respostas dela?")) return;
   try {
     await fetch(`${API_URL}/api/admin/questions/${id}`, {
-      method: "DELETE",
-      headers: authHeaders()
+      method: "DELETE", headers: authHeaders()
     });
     loadQuestions();
     loadResponses();
@@ -787,34 +946,59 @@ async function deleteQuestion(id) {
   }
 }
 
-// ===== RESPOSTAS =====
+// ============================================================
+// ADMIN — RESPOSTAS
+// ============================================================
+
+document.querySelectorAll(".filter-tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentFilter = tab.dataset.filter;
+    renderResponses();
+  };
+});
 
 async function loadResponses() {
   const list = document.getElementById("responsesList");
   try {
-    const res = await fetch(`${API_URL}/api/admin/sessions`, {
-      headers: authHeaders()
-    });
+    const res = await fetch(`${API_URL}/api/admin/sessions`, { headers: authHeaders() });
     currentSessions = await res.json();
-    if (!currentSessions.length) {
-      list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
-      return;
-    }
+    renderResponses();
+  } catch (e) {
+    list.innerHTML = '<div class="empty">Erro ao carregar respostas.</div>';
+  }
+}
 
-    list.innerHTML = currentSessions.map((s, idx) => {
-      const nome = s.respondent_name || "(sem nome)";
-      return `
+function renderResponses() {
+  const list = document.getElementById("responsesList");
+
+  const filtered = currentFilter === "all"
+    ? currentSessions
+    : currentSessions.filter(s => s.product === currentFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((s) => {
+    const nome = s.respondent_name || "(sem nome)";
+    const realIdx = currentSessions.indexOf(s);
+    return `
       <div class="session-card">
         <div class="session-header">
           <div>
-            <div class="session-name">👤 ${escapeHtml(nome)}</div>
+            <div class="session-name">
+              ${productBadge(s.product)} &nbsp; 👤 ${escapeHtml(nome)}
+            </div>
             <div class="session-phone">📱 ${escapeHtml(s.respondent_phone || "sem telefone")}</div>
             <span class="session-date">
               ${new Date(s.started_at).toLocaleString("pt-BR")}
             </span>
           </div>
           <div class="session-actions">
-            <button class="btn btn-secondary" onclick="copySession(${idx})">
+            <button class="btn btn-secondary" onclick="copySession(${realIdx})">
               📋 Copiar
             </button>
             <button class="btn btn-danger" onclick="deleteSession('${s.session_id}')">
@@ -831,32 +1015,27 @@ async function loadResponses() {
           `).join("")}
         </div>
       </div>`;
-    }).join("");
-  } catch (e) {
-    list.innerHTML = '<div class="empty">Erro ao carregar respostas.</div>';
-  }
+  }).join("");
 }
 
 function copySession(idx) {
   const s = currentSessions[idx];
   if (!s) return;
-  let text = `👤 ${s.respondent_name || "(sem nome)"}\n`;
+  let text = `${s.product === "mentoria" ? "🎓 Mentoria Online" : "🧭 GPS do Baixitas"}\n`;
+  text += `👤 ${s.respondent_name || "(sem nome)"}\n`;
   if (s.respondent_phone) text += `📱 ${s.respondent_phone}\n`;
   text += `${new Date(s.started_at).toLocaleString("pt-BR")}\n\n`;
   s.answers.forEach((a, i) => {
     text += `${i + 1}. ${a.question}\n→ ${a.answer || "(vazio)"}\n\n`;
   });
-  navigator.clipboard.writeText(text).then(() => {
-    alert("Respostas copiadas!");
-  });
+  navigator.clipboard.writeText(text).then(() => alert("Respostas copiadas!"));
 }
 
 async function deleteSession(sessionId) {
   if (!confirm("Excluir TODAS as respostas dessa pessoa?")) return;
   try {
     await fetch(`${API_URL}/api/admin/sessions/${sessionId}`, {
-      method: "DELETE",
-      headers: authHeaders()
+      method: "DELETE", headers: authHeaders()
     });
     loadResponses();
   } catch (e) {
@@ -865,24 +1044,27 @@ async function deleteSession(sessionId) {
 }
 
 document.getElementById("exportCsvBtn").onclick = () => {
-  if (!currentSessions.length) {
+  const source = currentFilter === "all"
+    ? currentSessions
+    : currentSessions.filter(s => s.product === currentFilter);
+
+  if (!source.length) {
     alert("Nenhuma resposta pra exportar.");
     return;
   }
 
   const questionOrder = [];
-  currentSessions.forEach(s => {
+  source.forEach(s => {
     s.answers.forEach(a => {
-      if (!questionOrder.includes(a.question)) {
-        questionOrder.push(a.question);
-      }
+      if (!questionOrder.includes(a.question)) questionOrder.push(a.question);
     });
   });
 
-  const headers = ["Nome", "WhatsApp", "Data/Hora", ...questionOrder];
+  const headers = ["Produto", "Nome", "WhatsApp", "Data/Hora", ...questionOrder];
 
-  const rows = currentSessions.map(s => {
+  const rows = source.map(s => {
     const row = [
+      s.product === "mentoria" ? "Mentoria" : "GPS",
       s.respondent_name || "",
       s.respondent_phone || "",
       new Date(s.started_at).toLocaleString("pt-BR")
@@ -904,7 +1086,7 @@ document.getElementById("exportCsvBtn").onclick = () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `respostas_mentoria_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `respostas_${currentFilter}_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 };
@@ -912,15 +1094,18 @@ document.getElementById("exportCsvBtn").onclick = () => {
 document.getElementById("refreshBtn").onclick = () => {
   loadQuestions();
   loadResponses();
+  loadSettings();
 };
 
-// ===== NAVEGAÇÃO =====
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
 
 function showUserView() {
   adminView.classList.add("hidden");
   loginScreen.classList.add("hidden");
   userView.classList.remove("hidden");
-  if (!questions.length) initForm();
+  initForm();
 }
 
 function showLoginView() {
@@ -935,6 +1120,7 @@ function handleHashChange() {
       userView.classList.add("hidden");
       loginScreen.classList.add("hidden");
       adminView.classList.remove("hidden");
+      loadSettings();
       loadQuestions();
       loadResponses();
     } else {
@@ -945,9 +1131,7 @@ function handleHashChange() {
   }
 }
 
-document.getElementById("adminLock").onclick = () => {
-  window.location.hash = "#admin";
-};
+document.getElementById("adminLock").onclick = () => { window.location.hash = "#admin"; };
 
 window.addEventListener("hashchange", handleHashChange);
 handleHashChange();
