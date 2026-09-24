@@ -1,20 +1,29 @@
 {
-  "name": "formulario-contrabaixo",
+  "name": "mentoria-contrabaixo",
   "version": "1.0.0",
+  "description": "Plataforma de captação com formulários para Mentoria Online e GPS do Baixitas",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
+  "keywords": [
+    "contrabaixo",
+    "mentoria",
+    "formulario",
+    "hotmart"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
-    "bcryptjs": "^3.0.3",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.0.0"
   }
 }
