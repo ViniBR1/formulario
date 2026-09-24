@@ -4,6 +4,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { neon } from "@neondatabase/serverless";
+import bcrypt from "bcryptjs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,21 +13,44 @@ app.use(cors());
 app.use(express.json());
 
 const DATABASE_URL = process.env.DATABASE_URL;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const FALLBACK_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const PORT = process.env.PORT || 3000;
 
 if (!DATABASE_URL) console.error("\n⚠️  DATABASE_URL não configurada!\n");
 
 const sql = neon(DATABASE_URL || "");
 
-// ===== ROTAS PÚBLICAS =====
+// ============================================================
+// Autenticação: prioriza hash do banco, fallback pra env var
+// ============================================================
+async function checkPassword(password) {
+  try {
+    const rows = await sql`SELECT value FROM settings WHERE key = 'admin_password_hash'`;
+    if (rows.length && rows[0].value) {
+      return await bcrypt.compare(password, rows[0].value);
+    }
+  } catch (e) {
+    console.error("Erro ao ler hash do banco:", e.message);
+  }
+  return password === FALLBACK_PASSWORD;
+}
 
-// Perguntas filtradas por produto
+async function requireAuth(req, res, next) {
+  const pass = req.headers["x-admin-password"];
+  if (!pass) return res.status(401).json({ error: "Senha obrigatória" });
+  const ok = await checkPassword(pass);
+  if (!ok) return res.status(401).json({ error: "Senha incorreta" });
+  next();
+}
+
+// ============================================================
+// ROTAS PÚBLICAS
+// ============================================================
+
 app.get("/api/questions", async (req, res) => {
   try {
-    const product = req.query.product; // "gps" | "mentoria" | undefined
+    const product = req.query.product;
     let rows;
-
     if (product === "gps" || product === "mentoria") {
       rows = await sql`
         SELECT id, text, type, options, video_url, order_index, product
@@ -53,7 +77,6 @@ app.post("/api/responses", async (req, res) => {
       question_id, answer, session_id,
       respondent_name, respondent_phone, product
     } = req.body;
-
     await sql`
       INSERT INTO responses 
         (question_id, answer, session_id, respondent_name, respondent_phone, product)
@@ -68,10 +91,12 @@ app.post("/api/responses", async (req, res) => {
   }
 });
 
-// Settings público
 app.get("/api/settings", async (req, res) => {
   try {
-    const rows = await sql`SELECT key, value FROM settings`;
+    const rows = await sql`
+      SELECT key, value FROM settings 
+      WHERE key NOT LIKE '%password%'
+    `;
     const map = {};
     rows.forEach(r => { map[r.key] = r.value; });
     res.json(map);
@@ -80,15 +105,11 @@ app.get("/api/settings", async (req, res) => {
   }
 });
 
-// ===== ADMIN =====
+// ============================================================
+// ROTAS DO ADMIN
+// ============================================================
 
-function checkAuth(req, res, next) {
-  const pass = req.headers["x-admin-password"];
-  if (pass !== ADMIN_PASSWORD) return res.status(401).json({ error: "Senha incorreta" });
-  next();
-}
-
-app.get("/api/admin/sessions", checkAuth, async (req, res) => {
+app.get("/api/admin/sessions", requireAuth, async (req, res) => {
   try {
     const rows = await sql`
       SELECT 
@@ -99,7 +120,6 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
       LEFT JOIN questions q ON q.id = r.question_id
       ORDER BY r.session_id, q.order_index ASC, r.id ASC
     `;
-
     const sessions = {};
     for (const row of rows) {
       if (!sessions[row.session_id]) {
@@ -118,7 +138,6 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
         order: row.order_index
       });
     }
-
     const result = Object.values(sessions).sort(
       (a, b) => new Date(b.started_at) - new Date(a.started_at)
     );
@@ -128,8 +147,7 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
   }
 });
 
-// Criar pergunta
-app.post("/api/admin/questions", checkAuth, async (req, res) => {
+app.post("/api/admin/questions", requireAuth, async (req, res) => {
   try {
     const { text, type, options, video_url, order_index, product } = req.body;
     const rows = await sql`
@@ -148,8 +166,7 @@ app.post("/api/admin/questions", checkAuth, async (req, res) => {
   }
 });
 
-// Editar pergunta
-app.put("/api/admin/questions/:id", checkAuth, async (req, res) => {
+app.put("/api/admin/questions/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { text, type, options, video_url, order_index, product } = req.body;
@@ -169,7 +186,7 @@ app.put("/api/admin/questions/:id", checkAuth, async (req, res) => {
   }
 });
 
-app.delete("/api/admin/questions/:id", checkAuth, async (req, res) => {
+app.delete("/api/admin/questions/:id", requireAuth, async (req, res) => {
   try {
     await sql`DELETE FROM questions WHERE id = ${req.params.id}`;
     res.json({ ok: true });
@@ -178,7 +195,7 @@ app.delete("/api/admin/questions/:id", checkAuth, async (req, res) => {
   }
 });
 
-app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
+app.delete("/api/admin/sessions/:sessionId", requireAuth, async (req, res) => {
   try {
     await sql`DELETE FROM responses WHERE session_id = ${req.params.sessionId}`;
     res.json({ ok: true });
@@ -187,11 +204,11 @@ app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
   }
 });
 
-// Settings admin
-app.put("/api/admin/settings", checkAuth, async (req, res) => {
+app.put("/api/admin/settings", requireAuth, async (req, res) => {
   try {
     const updates = req.body;
     for (const [key, value] of Object.entries(updates)) {
+      if (key === "admin_password_hash") continue;
       await sql`
         INSERT INTO settings (key, value)
         VALUES (${key}, ${value})
@@ -204,7 +221,28 @@ app.put("/api/admin/settings", checkAuth, async (req, res) => {
   }
 });
 
-// ===== SERVE O HTML =====
+app.put("/api/admin/change-password", requireAuth, async (req, res) => {
+  try {
+    const { new_password } = req.body;
+    if (!new_password || new_password.length < 4) {
+      return res.status(400).json({ error: "Senha muito curta (mínimo 4 caracteres)." });
+    }
+    const hash = await bcrypt.hash(new_password, 10);
+    await sql`
+      INSERT INTO settings (key, value)
+      VALUES ('admin_password_hash', ${hash})
+      ON CONFLICT (key) DO UPDATE SET value = ${hash}
+    `;
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ============================================================
+// SERVE O HTML
+// ============================================================
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use(express.static(__dirname));
