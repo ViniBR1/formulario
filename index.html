@@ -186,63 +186,35 @@
   .choice-card h3 { font-size: 19px; margin-bottom: 8px; color: #fff; }
   .choice-card p { font-size: 13px; color: #999; margin: 0; line-height: 1.5; }
 
-  /* ===== CABEÇALHO DE PRODUTO (formulário) ===== */
+  /* ===== CABEÇALHO DE PRODUTO ===== */
   .product-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 12px 16px;
     background: rgba(168,85,247,0.08);
     border: 1px solid rgba(168,85,247,0.25);
-    border-radius: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    text-align: left;
+    border-radius: 12px; margin-bottom: 24px;
+    flex-wrap: wrap; text-align: left;
   }
-  .product-header-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .product-header-info { display: flex; align-items: center; gap: 12px; }
   .product-header-icon {
-    font-size: 28px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(168,85,247,0.15);
-    border-radius: 10px;
-    flex-shrink: 0;
+    font-size: 28px; width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(168,85,247,0.15); border-radius: 10px; flex-shrink: 0;
   }
   .product-header-label {
-    font-size: 11px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 700;
+    font-size: 11px; color: #888; text-transform: uppercase;
+    letter-spacing: 0.5px; font-weight: 700;
   }
-  .product-header-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: #c084fc;
-  }
+  .product-header-name { font-size: 16px; font-weight: 700; color: #c084fc; }
   .product-header-change {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
-    color: #ccc;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
+    color: #ccc; padding: 8px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
   }
   .product-header-change:hover {
-    border-color: rgba(168,85,247,0.5);
-    color: #fff;
+    border-color: rgba(168,85,247,0.5); color: #fff;
   }
 
   /* ===== ADMIN ===== */
@@ -358,8 +330,8 @@
         <input type="text" id="cfgGpsCheckout" placeholder="https://pay.hotmart.com/...">
       </div>
       <div class="form-group">
-        <label>🔗 Link de checkout da Mentoria Online (Hotmart)</label>
-        <input type="text" id="cfgMentoriaCheckout" placeholder="https://pay.hotmart.com/...">
+        <label>🔗 Link de checkout da Mentoria Online (não usado — mentoria é via WhatsApp)</label>
+        <input type="text" id="cfgMentoriaCheckout" placeholder="deixe vazio se não usar">
       </div>
       <div class="form-group">
         <label>📝 Descrição mostrada no card da Mentoria Online</label>
@@ -527,7 +499,6 @@ function attachChangeProductHandler() {
   }
 }
 
-// Extrai o produto de uma sessão (fallback via session_id)
 function getSessionProduct(s) {
   if (s.product === "gps" || s.product === "mentoria") return s.product;
   if (typeof s.session_id === "string") {
@@ -653,12 +624,58 @@ function renderQuestion() {
   if (current >= questions.length) {
     progressBar.style.width = "100%";
 
-    const checkoutUrl = selectedProduct === "gps"
-      ? settings.gps_checkout_url
-      : settings.mentoria_checkout_url;
-
-    const redirecting = !!checkoutUrl;
     const info = productInfo(selectedProduct);
+    const isGps = selectedProduct === "gps";
+    const checkoutUrl = isGps ? settings.gps_checkout_url : null;
+    const redirecting = isGps && !!checkoutUrl;
+    const waPhone = respondent.phone ? escapeHtml(respondent.phone) : null;
+
+    let finalHtml = "";
+
+    if (isGps) {
+      // GPS → redireciona pra Hotmart
+      finalHtml = redirecting
+        ? `<p style="margin-top:20px;color:#a855f7;font-weight:600;">
+             Redirecionando para o checkout...
+           </p>
+           <p style="font-size:13px;color:#888;margin-top:10px;">
+             Se não for redirecionado,
+             <a href="${escapeHtml(checkoutUrl)}" style="color:#a855f7;">clique aqui</a>.
+           </p>`
+        : `<p style="margin-top:20px;color:#ef4444;font-size:14px;">
+             Link de checkout ainda não configurado.
+           </p>`;
+    } else {
+      // Mentoria → avisa que a equipe vai chamar no WhatsApp
+      finalHtml = `
+        <div style="
+          margin-top:24px;
+          padding:20px;
+          background:rgba(74,222,128,0.08);
+          border:1px solid rgba(74,222,128,0.3);
+          border-radius:12px;
+          text-align:left;
+        ">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:28px;flex-shrink:0;">💬</div>
+            <div>
+              <div style="font-weight:700;color:#4ade80;margin-bottom:6px;">
+                Fique de olho no WhatsApp!
+              </div>
+              <p style="font-size:14px;color:#ccc;line-height:1.6;margin:0;">
+                Nossa equipe vai entrar em contato com você pelo WhatsApp
+                ${waPhone ? `<strong style="color:#4ade80;">${waPhone}</strong>` : ''}
+                para combinar os próximos passos da sua mentoria.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin-top:20px;font-size:13px;color:#888;">
+          Se preferir, você também pode nos chamar diretamente.
+        </p>
+      `;
+    }
 
     app.innerHTML = `
       <div class="done">
@@ -668,18 +685,7 @@ function renderQuestion() {
           ${info.name}
         </p>
         <p>Suas respostas foram enviadas com sucesso.</p>
-        ${redirecting
-          ? `<p style="margin-top:20px;color:#a855f7;font-weight:600;">
-               Redirecionando para o checkout...
-             </p>
-             <p style="font-size:13px;color:#888;margin-top:10px;">
-               Se não for redirecionado,
-               <a href="${escapeHtml(checkoutUrl)}" style="color:#a855f7;">clique aqui</a>.
-             </p>`
-          : `<p style="margin-top:20px;color:#ef4444;font-size:14px;">
-               Link de checkout ainda não configurado.
-             </p>`
-        }
+        ${finalHtml}
       </div>`;
 
     if (redirecting) {
