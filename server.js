@@ -21,18 +21,13 @@ if (!DATABASE_URL) console.error("\n⚠️  DATABASE_URL não configurada!\n");
 const sql = neon(DATABASE_URL || "");
 
 // ============================================================
-// Autenticação
-// 🔓 SENHA FIXA: "admin123" SEMPRE é aceita
+// Autenticação — 🔓 admin123 sempre funciona
 // ============================================================
 async function checkPassword(password) {
-  // 🔓 SEMPRE aceita "admin123" (com trim pra evitar espaço extra)
   const clean = (password || "").trim();
   if (clean === "admin123") return true;
-
-  // Fallback: env var se configurada
   if (clean === FALLBACK_PASSWORD) return true;
 
-  // Tenta validar contra o hash do banco (se existir)
   try {
     const rows = await sql`SELECT value FROM settings WHERE key = 'admin_password_hash'`;
     if (rows.length && rows[0].value) {
@@ -41,7 +36,6 @@ async function checkPassword(password) {
   } catch (e) {
     console.error("Erro ao ler hash do banco:", e.message);
   }
-
   return false;
 }
 
@@ -49,10 +43,7 @@ async function requireAuth(req, res, next) {
   const pass = req.headers["x-admin-password"];
   if (!pass) return res.status(401).json({ error: "Senha obrigatória" });
   const ok = await checkPassword(pass);
-  if (!ok) {
-    console.log("🔐 Login rejeitado. Senha recebida:", JSON.stringify(pass));
-    return res.status(401).json({ error: "Senha incorreta" });
-  }
+  if (!ok) return res.status(401).json({ error: "Senha incorreta" });
   next();
 }
 
@@ -88,15 +79,24 @@ app.post("/api/responses", async (req, res) => {
   try {
     const {
       question_id, answer, session_id,
-      respondent_name, respondent_phone, product
+      respondent_name, respondent_phone
     } = req.body;
+
+    // Detecta produto pela session_id se não vier no body
+    let product = req.body.product;
+    if (!product && typeof session_id === "string") {
+      if (session_id.startsWith("mentoria")) product = "mentoria";
+      else if (session_id.startsWith("gps")) product = "gps";
+    }
+    if (!product) product = "gps";
+
     await sql`
       INSERT INTO responses 
         (question_id, answer, session_id, respondent_name, respondent_phone, product)
       VALUES 
         (${question_id}, ${answer}, ${session_id}, 
          ${respondent_name || null}, ${respondent_phone || null},
-         ${product || null})
+         ${product})
     `;
     res.json({ ok: true });
   } catch (e) {
@@ -136,11 +136,19 @@ app.get("/api/admin/sessions", requireAuth, async (req, res) => {
     const sessions = {};
     for (const row of rows) {
       if (!sessions[row.session_id]) {
+        // Fallback: se product vier null, tenta extrair do session_id
+        let product = row.product;
+        if (!product && typeof row.session_id === "string") {
+          if (row.session_id.startsWith("mentoria")) product = "mentoria";
+          else if (row.session_id.startsWith("gps")) product = "gps";
+        }
+        if (!product) product = "gps";
+
         sessions[row.session_id] = {
           session_id: row.session_id,
           respondent_name: row.respondent_name,
           respondent_phone: row.respondent_phone,
-          product: row.product || "gps",
+          product,
           started_at: row.created_at,
           answers: []
         };
@@ -156,6 +164,7 @@ app.get("/api/admin/sessions", requireAuth, async (req, res) => {
     );
     res.json(result);
   } catch (e) {
+    console.error("Erro em /api/admin/sessions:", e);
     res.status(500).json({ error: e.message });
   }
 });
@@ -228,24 +237,6 @@ app.put("/api/admin/settings", requireAuth, async (req, res) => {
         ON CONFLICT (key) DO UPDATE SET value = ${value}
       `;
     }
-    res.json({ ok: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.put("/api/admin/change-password", requireAuth, async (req, res) => {
-  try {
-    const { new_password } = req.body;
-    if (!new_password || new_password.length < 4) {
-      return res.status(400).json({ error: "Senha muito curta (mínimo 4 caracteres)." });
-    }
-    const hash = await bcrypt.hash(new_password, 10);
-    await sql`
-      INSERT INTO settings (key, value)
-      VALUES ('admin_password_hash', ${hash})
-      ON CONFLICT (key) DO UPDATE SET value = ${hash}
-    `;
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });

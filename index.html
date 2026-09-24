@@ -139,7 +139,7 @@
   .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
 
   .identify-screen {
-    max-width: 480px; margin: 60px auto 0;
+    max-width: 480px; margin: 40px auto 0;
     text-align: center; animation: fadeIn 0.4s ease;
   }
   .identify-screen h1 {
@@ -185,6 +185,65 @@
   .choice-card .icon { font-size: 44px; margin-bottom: 12px; }
   .choice-card h3 { font-size: 19px; margin-bottom: 8px; color: #fff; }
   .choice-card p { font-size: 13px; color: #999; margin: 0; line-height: 1.5; }
+
+  /* ===== CABEÇALHO DE PRODUTO (formulário) ===== */
+  .product-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(168,85,247,0.08);
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+  .product-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .product-header-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(168,85,247,0.15);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .product-header-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .product-header-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #c084fc;
+  }
+  .product-header-change {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ccc;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .product-header-change:hover {
+    border-color: rgba(168,85,247,0.5);
+    color: #fff;
+  }
 
   /* ===== ADMIN ===== */
   .admin-header {
@@ -432,6 +491,52 @@ function productBadge(product) {
   return '<span class="badge badge-both">🌐 Ambos</span>';
 }
 
+function productInfo(product) {
+  if (product === "mentoria") {
+    return { icon: "🎓", name: "Mentoria Online" };
+  }
+  return { icon: "🧭", name: "GPS do Baixitas" };
+}
+
+function renderProductHeader() {
+  const info = productInfo(selectedProduct);
+  return `
+    <div class="product-header">
+      <div class="product-header-info">
+        <div class="product-header-icon">${info.icon}</div>
+        <div>
+          <div class="product-header-label">Você está respondendo</div>
+          <div class="product-header-name">${info.name}</div>
+        </div>
+      </div>
+      <button class="product-header-change" id="changeProductBtn">
+        🔄 Trocar
+      </button>
+    </div>
+  `;
+}
+
+function attachChangeProductHandler() {
+  const changeBtn = document.getElementById("changeProductBtn");
+  if (changeBtn) {
+    changeBtn.onclick = () => {
+      if (confirm("Trocar de formulário? Você vai perder o progresso atual.")) {
+        renderChoiceScreen();
+      }
+    };
+  }
+}
+
+// Extrai o produto de uma sessão (fallback via session_id)
+function getSessionProduct(s) {
+  if (s.product === "gps" || s.product === "mentoria") return s.product;
+  if (typeof s.session_id === "string") {
+    if (s.session_id.startsWith("mentoria")) return "mentoria";
+    if (s.session_id.startsWith("gps")) return "gps";
+  }
+  return "gps";
+}
+
 // ============================================================
 // TELA DE ESCOLHA
 // ============================================================
@@ -488,10 +593,14 @@ async function loadQuestionsForProduct(product) {
 
 function renderIdentifyScreen() {
   updateProgress();
-  const isGps = selectedProduct === "gps";
+  const info = productInfo(selectedProduct);
+
   app.innerHTML = `
     <div class="identify-screen">
-      <h1>${isGps ? "🧭 GPS do Baixitas" : "🎓 Mentoria Online"}</h1>
+      ${renderProductHeader()}
+
+      <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
+      <h1>${info.name}</h1>
       <p>Antes de começar, precisamos te conhecer</p>
 
       <div class="form-group">
@@ -532,6 +641,8 @@ function renderIdentifyScreen() {
   startBtn.onclick = tryStart;
   nameInput.addEventListener("keypress", e => { if (e.key === "Enter") tryStart(); });
   document.getElementById("backChoiceBtn").onclick = renderChoiceScreen;
+
+  attachChangeProductHandler();
 }
 
 // ============================================================
@@ -547,10 +658,15 @@ function renderQuestion() {
       : settings.mentoria_checkout_url;
 
     const redirecting = !!checkoutUrl;
+    const info = productInfo(selectedProduct);
 
     app.innerHTML = `
       <div class="done">
+        <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
         <h2>✅ Obrigado, ${escapeHtml(respondent.name.split(" ")[0])}!</h2>
+        <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">
+          ${info.name}
+        </p>
         <p>Suas respostas foram enviadas com sucesso.</p>
         ${redirecting
           ? `<p style="margin-top:20px;color:#a855f7;font-weight:600;">
@@ -596,9 +712,8 @@ function renderQuestion() {
 
   app.innerHTML = `
     <div class="step">
-      <div class="step-number">
-        ${productBadge(selectedProduct)} &nbsp; • &nbsp; PERGUNTA ${current + 1} DE ${questions.length}
-      </div>
+      ${renderProductHeader()}
+      <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
       <div class="question">${escapeHtml(q.text)}</div>
       ${renderVideo(q.video_url)}
       ${inputHtml}
@@ -648,6 +763,8 @@ function renderQuestion() {
     const ta = document.getElementById("answer");
     if (ta && !saved) ta.focus();
   }
+
+  attachChangeProductHandler();
 }
 
 async function submitAnswer(questionId, answer) {
@@ -699,7 +816,6 @@ async function initForm() {
 
 // ============================================================
 // ADMIN — LOGIN
-// 🔓 SENHA FIXA: "admin123"
 // ============================================================
 
 const passwordInput = document.getElementById("passwordInput");
@@ -713,12 +829,12 @@ function doLogin() {
   const pass = passwordInput.value;
   if (!pass) return;
 
-  if (pass !== FIXED_PASSWORD) {
+  if (pass.trim() !== FIXED_PASSWORD) {
     loginError.textContent = "Senha incorreta.";
     return;
   }
 
-  window.ADMIN_PASS = pass;
+  window.ADMIN_PASS = FIXED_PASSWORD;
   loginError.textContent = "";
   loginScreen.classList.add("hidden");
   adminView.classList.remove("hidden");
@@ -804,7 +920,7 @@ async function loadQuestions() {
   try {
     const res = await fetch(`${API_URL}/api/questions`);
     const qs = await res.json();
-    if (!qs.length) {
+    if (!Array.isArray(qs) || !qs.length) {
       list.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada.</div>';
       return;
     }
@@ -951,6 +1067,21 @@ async function deleteQuestion(id) {
 // ADMIN — RESPOSTAS
 // ============================================================
 
+function updateFilterCounts() {
+  if (!Array.isArray(currentSessions)) currentSessions = [];
+
+  const total = currentSessions.length;
+  const gpsCount = currentSessions.filter(s => getSessionProduct(s) === "gps").length;
+  const mentoriaCount = currentSessions.filter(s => getSessionProduct(s) === "mentoria").length;
+
+  document.querySelectorAll(".filter-tab").forEach(tab => {
+    const f = tab.dataset.filter;
+    if (f === "all") tab.textContent = `Todas (${total})`;
+    if (f === "gps") tab.textContent = `🧭 GPS do Baixitas (${gpsCount})`;
+    if (f === "mentoria") tab.textContent = `🎓 Mentoria Online (${mentoriaCount})`;
+  });
+}
+
 document.querySelectorAll(".filter-tab").forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
@@ -964,19 +1095,43 @@ async function loadResponses() {
   const list = document.getElementById("responsesList");
   try {
     const res = await fetch(`${API_URL}/api/admin/sessions`, { headers: authHeaders() });
-    currentSessions = await res.json();
+
+    if (!res.ok) {
+      let errMsg = "Erro desconhecido";
+      try {
+        const errBody = await res.json();
+        errMsg = errBody.error || errMsg;
+      } catch (_) {}
+      currentSessions = [];
+      list.innerHTML = `
+        <div class="empty" style="color:#ef4444;">
+          ❌ Erro ao carregar respostas (HTTP ${res.status})<br>
+          <span style="font-size:13px;color:#888;">${escapeHtml(errMsg)}</span>
+        </div>
+      `;
+      updateFilterCounts();
+      return;
+    }
+
+    const data = await res.json();
+    currentSessions = Array.isArray(data) ? data : [];
     renderResponses();
+    updateFilterCounts();
   } catch (e) {
-    list.innerHTML = '<div class="empty">Erro ao carregar respostas.</div>';
+    currentSessions = [];
+    list.innerHTML = '<div class="empty" style="color:#ef4444;">Erro de conexão.</div>';
+    updateFilterCounts();
   }
 }
 
 function renderResponses() {
   const list = document.getElementById("responsesList");
 
+  if (!Array.isArray(currentSessions)) currentSessions = [];
+
   const filtered = currentFilter === "all"
     ? currentSessions
-    : currentSessions.filter(s => s.product === currentFilter);
+    : currentSessions.filter(s => getSessionProduct(s) === currentFilter);
 
   if (!filtered.length) {
     list.innerHTML = '<div class="empty">Nenhuma resposta ainda.</div>';
@@ -985,13 +1140,14 @@ function renderResponses() {
 
   list.innerHTML = filtered.map((s) => {
     const nome = s.respondent_name || "(sem nome)";
+    const prod = getSessionProduct(s);
     const realIdx = currentSessions.indexOf(s);
     return `
       <div class="session-card">
         <div class="session-header">
           <div>
             <div class="session-name">
-              ${productBadge(s.product)} &nbsp; 👤 ${escapeHtml(nome)}
+              ${productBadge(prod)} &nbsp; 👤 ${escapeHtml(nome)}
             </div>
             <div class="session-phone">📱 ${escapeHtml(s.respondent_phone || "sem telefone")}</div>
             <span class="session-date">
@@ -1022,7 +1178,8 @@ function renderResponses() {
 function copySession(idx) {
   const s = currentSessions[idx];
   if (!s) return;
-  let text = `${s.product === "mentoria" ? "🎓 Mentoria Online" : "🧭 GPS do Baixitas"}\n`;
+  const prod = getSessionProduct(s);
+  let text = `${prod === "mentoria" ? "🎓 Mentoria Online" : "🧭 GPS do Baixitas"}\n`;
   text += `👤 ${s.respondent_name || "(sem nome)"}\n`;
   if (s.respondent_phone) text += `📱 ${s.respondent_phone}\n`;
   text += `${new Date(s.started_at).toLocaleString("pt-BR")}\n\n`;
@@ -1047,7 +1204,7 @@ async function deleteSession(sessionId) {
 document.getElementById("exportCsvBtn").onclick = () => {
   const source = currentFilter === "all"
     ? currentSessions
-    : currentSessions.filter(s => s.product === currentFilter);
+    : currentSessions.filter(s => getSessionProduct(s) === currentFilter);
 
   if (!source.length) {
     alert("Nenhuma resposta pra exportar.");
@@ -1064,8 +1221,9 @@ document.getElementById("exportCsvBtn").onclick = () => {
   const headers = ["Produto", "Nome", "WhatsApp", "Data/Hora", ...questionOrder];
 
   const rows = source.map(s => {
+    const prod = getSessionProduct(s);
     const row = [
-      s.product === "mentoria" ? "Mentoria" : "GPS",
+      prod === "mentoria" ? "Mentoria" : "GPS",
       s.respondent_name || "",
       s.respondent_phone || "",
       new Date(s.started_at).toLocaleString("pt-BR")
