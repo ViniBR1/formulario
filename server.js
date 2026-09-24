@@ -11,28 +11,36 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ============================================================
-// Variáveis de ambiente
-// ============================================================
 const DATABASE_URL = process.env.DATABASE_URL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const PORT = process.env.PORT || 3000;
 
-if (!DATABASE_URL) {
-  console.error("\n⚠️  DATABASE_URL não configurada!\n");
-}
+if (!DATABASE_URL) console.error("\n⚠️  DATABASE_URL não configurada!\n");
 
 const sql = neon(DATABASE_URL || "");
 
 // ===== ROTAS PÚBLICAS =====
 
+// Perguntas filtradas por produto
 app.get("/api/questions", async (req, res) => {
   try {
-    const rows = await sql`
-      SELECT id, text, type, options, video_url, order_index
-      FROM questions
-      ORDER BY order_index ASC, id ASC
-    `;
+    const product = req.query.product; // "gps" | "mentoria" | undefined
+    let rows;
+
+    if (product === "gps" || product === "mentoria") {
+      rows = await sql`
+        SELECT id, text, type, options, video_url, order_index, product
+        FROM questions
+        WHERE product = ${product} OR product = 'both' OR product IS NULL
+        ORDER BY order_index ASC, id ASC
+      `;
+    } else {
+      rows = await sql`
+        SELECT id, text, type, options, video_url, order_index, product
+        FROM questions
+        ORDER BY order_index ASC, id ASC
+      `;
+    }
     res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -42,19 +50,17 @@ app.get("/api/questions", async (req, res) => {
 app.post("/api/responses", async (req, res) => {
   try {
     const {
-      question_id,
-      answer,
-      session_id,
-      respondent_name,
-      respondent_phone
+      question_id, answer, session_id,
+      respondent_name, respondent_phone, product
     } = req.body;
 
     await sql`
       INSERT INTO responses 
-        (question_id, answer, session_id, respondent_name, respondent_phone)
+        (question_id, answer, session_id, respondent_name, respondent_phone, product)
       VALUES 
         (${question_id}, ${answer}, ${session_id}, 
-         ${respondent_name || null}, ${respondent_phone || null})
+         ${respondent_name || null}, ${respondent_phone || null},
+         ${product || null})
     `;
     res.json({ ok: true });
   } catch (e) {
@@ -62,13 +68,23 @@ app.post("/api/responses", async (req, res) => {
   }
 });
 
-// ===== ROTAS DO ADMIN =====
+// Settings público
+app.get("/api/settings", async (req, res) => {
+  try {
+    const rows = await sql`SELECT key, value FROM settings`;
+    const map = {};
+    rows.forEach(r => { map[r.key] = r.value; });
+    res.json(map);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ===== ADMIN =====
 
 function checkAuth(req, res, next) {
   const pass = req.headers["x-admin-password"];
-  if (pass !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: "Senha incorreta" });
-  }
+  if (pass !== ADMIN_PASSWORD) return res.status(401).json({ error: "Senha incorreta" });
   next();
 }
 
@@ -76,13 +92,9 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
   try {
     const rows = await sql`
       SELECT 
-        r.session_id,
-        r.answer,
-        r.created_at,
-        r.respondent_name,
-        r.respondent_phone,
-        q.text AS question_text,
-        q.order_index
+        r.session_id, r.answer, r.created_at,
+        r.respondent_name, r.respondent_phone, r.product,
+        q.text AS question_text, q.order_index
       FROM responses r
       LEFT JOIN questions q ON q.id = r.question_id
       ORDER BY r.session_id, q.order_index ASC, r.id ASC
@@ -95,6 +107,7 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
           session_id: row.session_id,
           respondent_name: row.respondent_name,
           respondent_phone: row.respondent_phone,
+          product: row.product || "gps",
           started_at: row.created_at,
           answers: []
         };
@@ -109,24 +122,7 @@ app.get("/api/admin/sessions", checkAuth, async (req, res) => {
     const result = Object.values(sessions).sort(
       (a, b) => new Date(b.started_at) - new Date(a.started_at)
     );
-
     res.json(result);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get("/api/admin/responses", checkAuth, async (req, res) => {
-  try {
-    const rows = await sql`
-      SELECT r.id, r.answer, r.session_id, r.created_at,
-             r.respondent_name, r.respondent_phone,
-             q.text AS question_text
-      FROM responses r
-      LEFT JOIN questions q ON q.id = r.question_id
-      ORDER BY r.created_at DESC
-    `;
-    res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -135,15 +131,14 @@ app.get("/api/admin/responses", checkAuth, async (req, res) => {
 // Criar pergunta
 app.post("/api/admin/questions", checkAuth, async (req, res) => {
   try {
-    const { text, type, options, video_url, order_index } = req.body;
+    const { text, type, options, video_url, order_index, product } = req.body;
     const rows = await sql`
-      INSERT INTO questions (text, type, options, video_url, order_index)
+      INSERT INTO questions (text, type, options, video_url, order_index, product)
       VALUES (
-        ${text},
-        ${type || 'text'},
+        ${text}, ${type || 'text'},
         ${options ? JSON.stringify(options) : null}::jsonb,
-        ${video_url || null},
-        ${order_index || 0}
+        ${video_url || null}, ${order_index || 0},
+        ${product || 'both'}
       )
       RETURNING *
     `;
@@ -157,16 +152,14 @@ app.post("/api/admin/questions", checkAuth, async (req, res) => {
 app.put("/api/admin/questions/:id", checkAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { text, type, options, video_url, order_index } = req.body;
-
+    const { text, type, options, video_url, order_index, product } = req.body;
     const rows = await sql`
       UPDATE questions
-      SET 
-        text = ${text},
-        type = ${type || 'text'},
-        options = ${options ? JSON.stringify(options) : null}::jsonb,
-        video_url = ${video_url || null},
-        order_index = ${order_index || 0}
+      SET text = ${text}, type = ${type || 'text'},
+          options = ${options ? JSON.stringify(options) : null}::jsonb,
+          video_url = ${video_url || null},
+          order_index = ${order_index || 0},
+          product = ${product || 'both'}
       WHERE id = ${id}
       RETURNING *
     `;
@@ -176,21 +169,9 @@ app.put("/api/admin/questions/:id", checkAuth, async (req, res) => {
   }
 });
 
-// Deletar pergunta
 app.delete("/api/admin/questions/:id", checkAuth, async (req, res) => {
   try {
-    const { id } = req.params;
-    await sql`DELETE FROM questions WHERE id = ${id}`;
-    res.json({ ok: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.delete("/api/admin/responses/:id", checkAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-    await sql`DELETE FROM responses WHERE id = ${id}`;
+    await sql`DELETE FROM questions WHERE id = ${req.params.id}`;
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -199,8 +180,24 @@ app.delete("/api/admin/responses/:id", checkAuth, async (req, res) => {
 
 app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
   try {
-    const { sessionId } = req.params;
-    await sql`DELETE FROM responses WHERE session_id = ${sessionId}`;
+    await sql`DELETE FROM responses WHERE session_id = ${req.params.sessionId}`;
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Settings admin
+app.put("/api/admin/settings", checkAuth, async (req, res) => {
+  try {
+    const updates = req.body;
+    for (const [key, value] of Object.entries(updates)) {
+      await sql`
+        INSERT INTO settings (key, value)
+        VALUES (${key}, ${value})
+        ON CONFLICT (key) DO UPDATE SET value = ${value}
+      `;
+    }
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -209,11 +206,7 @@ app.delete("/api/admin/sessions/:sessionId", checkAuth, async (req, res) => {
 
 // ===== SERVE O HTML =====
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use(express.static(__dirname));
 
 export default app;
