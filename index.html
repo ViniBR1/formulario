@@ -78,7 +78,7 @@
   /* ===== VÍDEO VERTICAL (9:16) ===== */
   .video-wrapper {
     position: relative;
-    padding-bottom: 177.78%; /* 9:16 vertical */
+    padding-bottom: 177.78%;
     height: 0;
     margin-bottom: 24px;
     border-radius: 12px;
@@ -449,7 +449,7 @@ function renderVideo(url) {
   return `
     <div class="video-wrapper">
       <iframe 
-        src="https://drive.google.com/file/d/${id}/preview?autoplay=1&rm=minimal"
+        src="https://drive.google.com/file/d/${id}/preview?autoplay=1&rm=minimal&controls=1&showinfo=0&modestbranding=1"
         allow="autoplay; encrypted-media"
         allowfullscreen
         loading="lazy">
