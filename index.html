@@ -13,6 +13,25 @@
   .container { width: 100%; max-width: 780px; margin: 0 auto; }
   .hidden { display: none !important; }
 
+  /* ===== LOGO NO TOPO ===== */
+  .brand-logo {
+    display: block;
+    max-width: 180px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    margin: 0 auto 24px;
+    object-fit: contain;
+  }
+  .brand-logo-header {
+    display: block;
+    max-width: 140px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
   .admin-lock {
     position: fixed; top: 20px; right: 20px;
     width: 44px; height: 44px; border-radius: 12px;
@@ -75,7 +94,7 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO VERTICAL (9:16) — modo clean ===== */
+  /* ===== VÍDEO VERTICAL (9:16) ===== */
   .video-wrapper {
     position: relative;
     padding-bottom: 177.78%;
@@ -231,6 +250,7 @@
     border-color: rgba(168,85,247,0.5); color: #fff;
   }
 
+  /* ===== ADMIN ===== */
   .admin-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 24px;
@@ -258,6 +278,67 @@
     border-radius: 10px; color: #fff;
     font-family: inherit; font-size: 14px;
   }
+
+  /* Upload de logo */
+  .logo-upload-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 2px dashed rgba(168,85,247,0.3);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .logo-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .logo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .logo-preview .placeholder {
+    color: #555;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px;
+  }
+  .logo-upload-info { flex: 1; min-width: 200px; }
+  .logo-upload-info p {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .logo-upload-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: rgba(168,85,247,0.15);
+    border: 1px solid rgba(168,85,247,0.4);
+    color: #c084fc;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .logo-upload-btn:hover {
+    background: rgba(168,85,247,0.25);
+    border-color: rgba(168,85,247,0.6);
+    color: #fff;
+  }
+  .logo-upload-btn input { display: none; }
 
   .session-card {
     background: rgba(255,255,255,0.04);
@@ -335,6 +416,30 @@
       <button class="btn btn-secondary" id="logoutBtn">Sair</button>
     </div>
 
+    <h2>🎨 Identidade Visual</h2>
+    <div class="card">
+      <div class="logo-upload-area">
+        <div class="logo-preview" id="logoPreview">
+          <div class="placeholder">Sem logo</div>
+        </div>
+        <div class="logo-upload-info">
+          <p>
+            Escolha uma imagem (PNG, JPG, SVG).<br>
+            <strong style="color:#c084fc;">Recomendado:</strong> até 200KB, máx 400px de largura.<br>
+            A imagem será salva em <strong>base64</strong> no banco de dados.
+          </p>
+          <label class="logo-upload-btn">
+            📤 Escolher imagem
+            <input type="file" id="logoFile" accept="image/*">
+          </label>
+          <button class="btn btn-danger" id="removeLogoBtn" style="margin-left:8px;">
+            🗑️ Remover logo
+          </button>
+        </div>
+      </div>
+      <div id="logoFeedback" style="font-size:13px;color:#4ade80;margin-top:8px;"></div>
+    </div>
+
     <h2>⚙️ Configurações do Site</h2>
     <div class="card">
       <div class="form-group">
@@ -342,15 +447,15 @@
         <input type="text" id="cfgGpsCheckout" placeholder="https://pay.hotmart.com/...">
       </div>
       <div class="form-group">
-        <label>🔗 Link de checkout da Mentoria Online (não usado — mentoria é via WhatsApp)</label>
+        <label>🔗 Link de checkout da Mentoria Online (não usado)</label>
         <input type="text" id="cfgMentoriaCheckout" placeholder="deixe vazio se não usar">
       </div>
       <div class="form-group">
-        <label>📝 Descrição mostrada no card da Mentoria Online</label>
+        <label>📝 Descrição do card da Mentoria Online</label>
         <textarea id="cfgMentoriaDesc" placeholder="Aulas individuais, ao vivo..."></textarea>
       </div>
       <div class="form-group">
-        <label>📝 Descrição mostrada no card do GPS do Baixista</label>
+        <label>📝 Descrição do card do GPS do Baixista</label>
         <textarea id="cfgGpsDesc" placeholder="Descubra seu nível e receba o acesso..."></textarea>
       </div>
       <button class="btn btn-primary" id="saveSettingsBtn">💾 Salvar configurações</button>
@@ -385,9 +490,9 @@
       </div>
       <div class="form-group">
         <label>Link do vídeo (YouTube ou Google Drive)</label>
-        <input type="text" id="newVideo" placeholder="https://youtu.be/ID ou https://drive.google.com/file/d/ID/preview">
+        <input type="text" id="newVideo" placeholder="https://youtu.be/ID">
         <div style="font-size:11px;color:#666;margin-top:4px;">
-          Cole o link normal do YouTube (ex: https://www.youtube.com/watch?v=abc ou https://youtu.be/abc)
+          Cole o link normal do YouTube. Ex: https://youtu.be/abc
         </div>
       </div>
       <div class="form-group">
@@ -442,13 +547,12 @@ let respondent = { name: "", phone: "", sessionId: "" };
 const isAdminMode = () => window.location.hash === "#admin";
 
 // ============================================================
-// EXTRAÇÃO DE ID DO YOUTUBE (robusta)
+// HELPERS
 // ============================================================
 
 function extractYouTubeId(url) {
   if (!url) return null;
   const raw = url.trim();
-
   if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return raw;
 
   const patterns = [
@@ -465,7 +569,6 @@ function extractYouTubeId(url) {
     const match = raw.match(pattern);
     if (match && match[1]) return match[1];
   }
-
   return null;
 }
 
@@ -480,8 +583,19 @@ function isYouTube(url) {
   return url.includes("youtube.com") || url.includes("youtu.be");
 }
 
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function updateProgress() {
+  const pct = questions.length ? (current / questions.length) * 100 : 0;
+  progressBar.style.width = pct + "%";
+}
+
 // ============================================================
-// RENDERIZAÇÃO DO VÍDEO (modo clean total)
+// VÍDEO — SEM AUTOPLAY (aluno clica pra tocar)
 // ============================================================
 
 function renderVideo(url) {
@@ -490,29 +604,21 @@ function renderVideo(url) {
   // ============ YOUTUBE ============
   if (isYouTube(url)) {
     const videoId = extractYouTubeId(url);
-
     if (!videoId) {
       return `
         <div style="
-          padding:16px;
-          background:rgba(239,68,68,0.1);
+          padding:16px; background:rgba(239,68,68,0.1);
           border:1px solid rgba(239,68,68,0.3);
-          border-radius:10px;
-          color:#ef4444;
-          font-size:13px;
-          margin-bottom:24px;
-          text-align:center;
+          border-radius:10px; color:#ef4444;
+          font-size:13px; margin-bottom:24px; text-align:center;
         ">
           ⚠️ Não consegui identificar o vídeo do YouTube.<br>
-          <span style="font-size:11px;color:#999;">
-            Link usado: ${escapeHtml(url)}
-          </span>
+          <span style="font-size:11px;color:#999;">Link: ${escapeHtml(url)}</span>
         </div>`;
     }
 
+    // SEM autoplay, SEM mute — aluno clica pra tocar
     const params = [
-      "autoplay=1",
-      "mute=1",
       "rel=0",
       "modestbranding=1",
       "playsinline=1",
@@ -521,15 +627,14 @@ function renderVideo(url) {
       "cc_load_policy=0",
       "disablekb=1",
       "fs=0",
-      "color=white",
-      "enablejsapi=0"
+      "color=white"
     ].join("&");
 
     return `
       <div class="video-wrapper">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}?${params}"
-          allow="autoplay; encrypted-media"
+          allow="encrypted-media"
           allowfullscreen
           loading="lazy">
         </iframe>
@@ -543,24 +648,27 @@ function renderVideo(url) {
   return `
     <div class="video-wrapper">
       <iframe 
-        src="https://drive.google.com/file/d/${driveId}/preview?autoplay=1&rm=minimal&controls=1&showinfo=0&modestbranding=1"
-        allow="autoplay; encrypted-media"
+        src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
+        allow="encrypted-media"
         allowfullscreen
         loading="lazy">
       </iframe>
     </div>`;
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str || "";
-  return div.innerHTML;
+// ============================================================
+// LOGO — HELPERS
+// ============================================================
+
+function getLogoHtml(extraClass = "") {
+  if (!settings.logo_image) return "";
+  const cls = extraClass ? ` ${extraClass}` : "";
+  return `<img src="${settings.logo_image}" alt="Logo" class="brand-logo${cls}">`;
 }
 
-function updateProgress() {
-  const pct = questions.length ? (current / questions.length) * 100 : 0;
-  progressBar.style.width = pct + "%";
-}
+// ============================================================
+// PRODUTOS
+// ============================================================
 
 function productBadge(product) {
   if (product === "gps") return '<span class="badge badge-gps">🧭 GPS</span>';
@@ -569,9 +677,7 @@ function productBadge(product) {
 }
 
 function productInfo(product) {
-  if (product === "mentoria") {
-    return { icon: "🎓", name: "Mentoria Online" };
-  }
+  if (product === "mentoria") return { icon: "🎓", name: "Mentoria Online" };
   return { icon: "🧭", name: "GPS do Baixista" };
 }
 
@@ -586,9 +692,7 @@ function renderProductHeader() {
           <div class="product-header-name">${info.name}</div>
         </div>
       </div>
-      <button class="product-header-change" id="changeProductBtn">
-        🔄 Trocar
-      </button>
+      <button class="product-header-change" id="changeProductBtn">🔄 Trocar</button>
     </div>
   `;
 }
@@ -614,13 +718,14 @@ function getSessionProduct(s) {
 }
 
 // ============================================================
-// TELA DE ESCOLHA
+// TELA DE ESCOLHA (com logo)
 // ============================================================
 
 function renderChoiceScreen() {
   progressBar.style.width = "0%";
   app.innerHTML = `
     <div class="choice-screen">
+      ${getLogoHtml()}
       <h1>🎸 Bem-vindo!</h1>
       <p>Escolha por onde quer começar</p>
       <div class="choice-cards">
@@ -658,8 +763,6 @@ async function loadQuestionsForProduct(product) {
     current = 0;
     answers = {};
 
-    // GPS do Baixista → vai direto pras perguntas (sem pedir nome)
-    // Mentoria Online → pede o nome primeiro
     if (product === "gps") {
       respondent.name = "Anônimo";
       respondent.phone = "";
@@ -674,7 +777,7 @@ async function loadQuestionsForProduct(product) {
 }
 
 // ============================================================
-// IDENTIFICAÇÃO (só pra Mentoria)
+// IDENTIFICAÇÃO (só Mentoria)
 // ============================================================
 
 function renderIdentifyScreen() {
@@ -762,12 +865,10 @@ function renderQuestion() {
     } else {
       finalHtml = `
         <div style="
-          margin-top:24px;
-          padding:20px;
+          margin-top:24px; padding:20px;
           background:rgba(74,222,128,0.08);
           border:1px solid rgba(74,222,128,0.3);
-          border-radius:12px;
-          text-align:left;
+          border-radius:12px; text-align:left;
         ">
           <div style="display:flex;align-items:flex-start;gap:12px;">
             <div style="font-size:28px;flex-shrink:0;">💬</div>
@@ -783,7 +884,6 @@ function renderQuestion() {
             </div>
           </div>
         </div>
-
         <p style="margin-top:20px;font-size:13px;color:#888;">
           Se preferir, você também pode nos chamar diretamente.
         </p>
@@ -792,11 +892,10 @@ function renderQuestion() {
 
     app.innerHTML = `
       <div class="done">
+        ${getLogoHtml()}
         <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
         <h2>✅ Obrigado${respondent.name !== "Anônimo" ? `, ${escapeHtml(respondent.name.split(" ")[0])}` : ''}!</h2>
-        <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">
-          ${info.name}
-        </p>
+        <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">${info.name}</p>
         <p>Suas respostas foram enviadas com sucesso.</p>
         ${finalHtml}
       </div>`;
@@ -831,6 +930,7 @@ function renderQuestion() {
 
   app.innerHTML = `
     <div class="step">
+      ${getLogoHtml()}
       ${renderProductHeader()}
       <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
       <div class="question">${escapeHtml(q.text)}</div>
@@ -920,7 +1020,7 @@ async function submitAnswer(questionId, answer) {
 }
 
 // ============================================================
-// INICIALIZAÇÃO DO FORM
+// INICIALIZAÇÃO
 // ============================================================
 
 async function initForm() {
@@ -985,17 +1085,27 @@ document.getElementById("newType").onchange = (e) => {
 };
 
 // ============================================================
-// ADMIN — SETTINGS
+// ADMIN — SETTINGS + LOGO
 // ============================================================
 
 async function loadSettings() {
   try {
     const res = await fetch(`${API_URL}/api/settings`);
     const s = await res.json();
+    settings = s;
+
     document.getElementById("cfgGpsCheckout").value = s.gps_checkout_url || "";
     document.getElementById("cfgMentoriaCheckout").value = s.mentoria_checkout_url || "";
     document.getElementById("cfgMentoriaDesc").value = s.mentoria_description || "";
     document.getElementById("cfgGpsDesc").value = s.gps_description || "";
+
+    // Mostra a logo no preview do admin
+    const preview = document.getElementById("logoPreview");
+    if (s.logo_image) {
+      preview.innerHTML = `<img src="${s.logo_image}" alt="Logo">`;
+    } else {
+      preview.innerHTML = '<div class="placeholder">Sem logo</div>';
+    }
   } catch (e) {
     console.error("Erro ao carregar settings", e);
   }
@@ -1027,6 +1137,79 @@ document.getElementById("saveSettingsBtn").onclick = async () => {
     fb.textContent = "Erro ao salvar";
   } finally {
     btn.disabled = false;
+  }
+};
+
+// Upload de logo
+document.getElementById("logoFile").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const fb = document.getElementById("logoFeedback");
+
+  // Validação de tamanho (máx 1MB)
+  if (file.size > 1024 * 1024) {
+    fb.style.color = "#ef4444";
+    fb.textContent = "❌ Imagem muito grande. Máximo 1MB.";
+    return;
+  }
+
+  fb.style.color = "#a855f7";
+  fb.textContent = "Processando...";
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    const base64 = event.target.result;
+
+    // Atualiza preview
+    document.getElementById("logoPreview").innerHTML = `<img src="${base64}" alt="Logo">`;
+
+    // Salva no banco
+    try {
+      const res = await fetch(`${API_URL}/api/admin/settings`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ logo_image: base64 })
+      });
+      if (!res.ok) throw new Error();
+
+      settings.logo_image = base64;
+      fb.style.color = "#4ade80";
+      fb.textContent = "✅ Logo salva com sucesso!";
+      setTimeout(() => { fb.textContent = ""; }, 2500);
+    } catch (err) {
+      fb.style.color = "#ef4444";
+      fb.textContent = "❌ Erro ao salvar logo no banco.";
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+// Remover logo
+document.getElementById("removeLogoBtn").onclick = async () => {
+  if (!confirm("Remover a logo do site?")) return;
+
+  const fb = document.getElementById("logoFeedback");
+  fb.style.color = "#a855f7";
+  fb.textContent = "Removendo...";
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/settings`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ logo_image: "" })
+    });
+    if (!res.ok) throw new Error();
+
+    settings.logo_image = "";
+    document.getElementById("logoPreview").innerHTML = '<div class="placeholder">Sem logo</div>';
+    document.getElementById("logoFile").value = "";
+    fb.style.color = "#4ade80";
+    fb.textContent = "✅ Logo removida!";
+    setTimeout(() => { fb.textContent = ""; }, 2500);
+  } catch (err) {
+    fb.style.color = "#ef4444";
+    fb.textContent = "❌ Erro ao remover logo.";
   }
 };
 
@@ -1274,12 +1457,8 @@ function renderResponses() {
             </span>
           </div>
           <div class="session-actions">
-            <button class="btn btn-secondary" onclick="copySession(${realIdx})">
-              📋 Copiar
-            </button>
-            <button class="btn btn-danger" onclick="deleteSession('${s.session_id}')">
-              Excluir
-            </button>
+            <button class="btn btn-secondary" onclick="copySession(${realIdx})">📋 Copiar</button>
+            <button class="btn btn-danger" onclick="deleteSession('${s.session_id}')">Excluir</button>
           </div>
         </div>
         <div class="session-answers">
