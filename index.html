@@ -510,8 +510,9 @@ function renderVideo(url) {
         </div>`;
     }
 
-    // Parâmetros "máximo de limpeza" possíveis
     const params = [
+      "autoplay=1",
+      "mute=1",
       "rel=0",
       "modestbranding=1",
       "playsinline=1",
@@ -656,14 +657,24 @@ async function loadQuestionsForProduct(product) {
     }
     current = 0;
     answers = {};
-    renderIdentifyScreen();
+
+    // GPS do Baixista → vai direto pras perguntas (sem pedir nome)
+    // Mentoria Online → pede o nome primeiro
+    if (product === "gps") {
+      respondent.name = "Anônimo";
+      respondent.phone = "";
+      respondent.sessionId = `gps_anon_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      renderQuestion();
+    } else {
+      renderIdentifyScreen();
+    }
   } catch (e) {
     app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
   }
 }
 
 // ============================================================
-// IDENTIFICAÇÃO
+// IDENTIFICAÇÃO (só pra Mentoria)
 // ============================================================
 
 function renderIdentifyScreen() {
@@ -782,7 +793,7 @@ function renderQuestion() {
     app.innerHTML = `
       <div class="done">
         <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
-        <h2>✅ Obrigado, ${escapeHtml(respondent.name.split(" ")[0])}!</h2>
+        <h2>✅ Obrigado${respondent.name !== "Anônimo" ? `, ${escapeHtml(respondent.name.split(" ")[0])}` : ''}!</h2>
         <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">
           ${info.name}
         </p>
@@ -881,7 +892,7 @@ async function submitAnswer(questionId, answer) {
   btn.textContent = "Enviando...";
 
   const isLast = current === questions.length - 1;
-  if (isLast) {
+  if (isLast && selectedProduct === "mentoria") {
     const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
     if (phoneMatch) respondent.phone = phoneMatch[0].trim();
   }
