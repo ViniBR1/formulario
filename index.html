@@ -381,6 +381,9 @@
       <div class="form-group">
         <label>Link do vídeo (YouTube ou Google Drive)</label>
         <input type="text" id="newVideo" placeholder="https://youtu.be/ID ou https://drive.google.com/file/d/ID/preview">
+        <div style="font-size:11px;color:#666;margin-top:4px;">
+          Cole o link normal do YouTube (ex: https://www.youtube.com/watch?v=abc ou https://youtu.be/abc)
+        </div>
       </div>
       <div class="form-group">
         <label>Ordem</label>
@@ -434,8 +437,43 @@ let respondent = { name: "", phone: "", sessionId: "" };
 const isAdminMode = () => window.location.hash === "#admin";
 
 // ============================================================
-// HELPERS
+// EXTRAÇÃO DE ID DO YOUTUBE (robusta)
 // ============================================================
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const raw = url.trim();
+
+  // Se já é só um ID (11 caracteres alfanuméricos + _ -)
+  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return raw;
+
+  // Lista de regex, testadas em ordem
+  const patterns = [
+    // watch?v=ID
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    // youtu.be/ID
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    // /embed/ID
+    /\/embed\/([a-zA-Z0-9_-]{11})/,
+    // /shorts/ID
+    /\/shorts\/([a-zA-Z0-9_-]{11})/,
+    // /live/ID
+    /\/live\/([a-zA-Z0-9_-]{11})/,
+    // /v/ID (formato antigo)
+    /\/v\/([a-zA-Z0-9_-]{11})/,
+    // Último recurso: pega qualquer coisa com 11 caracteres depois de uma barra
+    /[\/=]([a-zA-Z0-9_-]{11})(?:[?&\/]|$)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = raw.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  return null;
+}
 
 function extractDriveId(url) {
   if (!url) return null;
@@ -443,41 +481,59 @@ function extractDriveId(url) {
   return m ? m[1] : null;
 }
 
+function isYouTube(url) {
+  if (!url) return false;
+  return url.includes("youtube.com") || url.includes("youtu.be");
+}
+
+// ============================================================
+// RENDERIZAÇÃO DO VÍDEO
+// ============================================================
+
 function renderVideo(url) {
   if (!url) return "";
 
   // ============ YOUTUBE ============
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    let videoId = "";
+  if (isYouTube(url)) {
+    const videoId = extractYouTubeId(url);
 
-    const patterns = [
-      /[?&]v=([^&]+)/,
-      /youtu\.be\/([^?&]+)/,
-      /youtube\.com\/embed\/([^?&]+)/,
-      /youtube\.com\/shorts\/([^?&]+)/
-    ];
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) { videoId = match[1]; break; }
+    if (!videoId) {
+      return `
+        <div style="
+          padding:16px;
+          background:rgba(239,68,68,0.1);
+          border:1px solid rgba(239,68,68,0.3);
+          border-radius:10px;
+          color:#ef4444;
+          font-size:13px;
+          margin-bottom:24px;
+          text-align:center;
+        ">
+          ⚠️ Não consegui identificar o vídeo do YouTube.<br>
+          <span style="font-size:11px;color:#999;">
+            Link usado: ${escapeHtml(url)}
+          </span>
+        </div>`;
     }
 
-    if (!videoId) return "";
+    console.log("[renderVideo] YouTube ID extraído:", videoId, "do link:", url);
 
     return `
       <div class="video-wrapper">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1"
-          allow="autoplay; encrypted-media; picture-in-picture"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowfullscreen
           loading="lazy">
         </iframe>
       </div>`;
   }
 
-  // ============ GOOGLE DRIVE (fallback) ============
+  // ============ GOOGLE DRIVE ============
   const driveId = extractDriveId(url);
   if (!driveId) return "";
+
+  console.log("[renderVideo] Google Drive ID extraído:", driveId);
 
   return `
     <div class="video-wrapper">
@@ -981,7 +1037,7 @@ async function loadQuestions() {
             </div>
             <div class="card-meta">
               Tipo: ${q.type} • Ordem: ${q.order_index}
-              ${q.video_url ? '• 🎬 com vídeo' : ''}
+              ${q.video_url ? `• 🎬 ${isYouTube(q.video_url) ? "YouTube" : "Drive"}` : ''}
             </div>
           </div>
           <div style="display:flex;gap:8px;">
