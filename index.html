@@ -379,8 +379,8 @@
         <textarea id="newOptions" placeholder="Opção 1&#10;Opção 2&#10;Opção 3"></textarea>
       </div>
       <div class="form-group">
-        <label>Link do vídeo no Google Drive (opcional)</label>
-        <input type="text" id="newVideo" placeholder="https://drive.google.com/file/d/ID/preview">
+        <label>Link do vídeo (YouTube ou Google Drive)</label>
+        <input type="text" id="newVideo" placeholder="https://youtu.be/ID ou https://drive.google.com/file/d/ID/preview">
       </div>
       <div class="form-group">
         <label>Ordem</label>
@@ -444,12 +444,45 @@ function extractDriveId(url) {
 }
 
 function renderVideo(url) {
-  const id = extractDriveId(url);
-  if (!id) return "";
+  if (!url) return "";
+
+  // ============ YOUTUBE ============
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    let videoId = "";
+
+    const patterns = [
+      /[?&]v=([^&]+)/,
+      /youtu\.be\/([^?&]+)/,
+      /youtube\.com\/embed\/([^?&]+)/,
+      /youtube\.com\/shorts\/([^?&]+)/
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) { videoId = match[1]; break; }
+    }
+
+    if (!videoId) return "";
+
+    return `
+      <div class="video-wrapper">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>`;
+  }
+
+  // ============ GOOGLE DRIVE (fallback) ============
+  const driveId = extractDriveId(url);
+  if (!driveId) return "";
+
   return `
     <div class="video-wrapper">
       <iframe 
-        src="https://drive.google.com/file/d/${id}/preview?autoplay=1&rm=minimal&controls=1&showinfo=0&modestbranding=1"
+        src="https://drive.google.com/file/d/${driveId}/preview?autoplay=1&rm=minimal&controls=1&showinfo=0&modestbranding=1"
         allow="autoplay; encrypted-media"
         allowfullscreen
         loading="lazy">
