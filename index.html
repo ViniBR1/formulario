@@ -75,7 +75,7 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO VERTICAL (9:16) ===== */
+  /* ===== VÍDEO VERTICAL (9:16) — modo clean ===== */
   .video-wrapper {
     position: relative;
     padding-bottom: 177.78%;
@@ -88,9 +88,14 @@
     margin-left: auto;
     margin-right: auto;
   }
+
   .video-wrapper iframe {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; border: none;
+    position: absolute;
+    top: -60px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 120px);
+    border: none;
   }
 
   textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
@@ -444,32 +449,21 @@ function extractYouTubeId(url) {
   if (!url) return null;
   const raw = url.trim();
 
-  // Se já é só um ID (11 caracteres alfanuméricos + _ -)
   if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return raw;
 
-  // Lista de regex, testadas em ordem
   const patterns = [
-    // watch?v=ID
     /[?&]v=([a-zA-Z0-9_-]{11})/,
-    // youtu.be/ID
     /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    // /embed/ID
     /\/embed\/([a-zA-Z0-9_-]{11})/,
-    // /shorts/ID
     /\/shorts\/([a-zA-Z0-9_-]{11})/,
-    // /live/ID
     /\/live\/([a-zA-Z0-9_-]{11})/,
-    // /v/ID (formato antigo)
     /\/v\/([a-zA-Z0-9_-]{11})/,
-    // Último recurso: pega qualquer coisa com 11 caracteres depois de uma barra
     /[\/=]([a-zA-Z0-9_-]{11})(?:[?&\/]|$)/
   ];
 
   for (const pattern of patterns) {
     const match = raw.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
+    if (match && match[1]) return match[1];
   }
 
   return null;
@@ -487,7 +481,7 @@ function isYouTube(url) {
 }
 
 // ============================================================
-// RENDERIZAÇÃO DO VÍDEO
+// RENDERIZAÇÃO DO VÍDEO (modo clean total)
 // ============================================================
 
 function renderVideo(url) {
@@ -516,13 +510,25 @@ function renderVideo(url) {
         </div>`;
     }
 
-    console.log("[renderVideo] YouTube ID extraído:", videoId, "do link:", url);
+    // Parâmetros "máximo de limpeza" possíveis
+    const params = [
+      "rel=0",
+      "modestbranding=1",
+      "playsinline=1",
+      "showinfo=0",
+      "iv_load_policy=3",
+      "cc_load_policy=0",
+      "disablekb=1",
+      "fs=0",
+      "color=white",
+      "enablejsapi=0"
+    ].join("&");
 
     return `
       <div class="video-wrapper">
         <iframe 
-          src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1"
-          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          src="https://www.youtube.com/embed/${videoId}?${params}"
+          allow="autoplay; encrypted-media"
           allowfullscreen
           loading="lazy">
         </iframe>
@@ -532,8 +538,6 @@ function renderVideo(url) {
   // ============ GOOGLE DRIVE ============
   const driveId = extractDriveId(url);
   if (!driveId) return "";
-
-  console.log("[renderVideo] Google Drive ID extraído:", driveId);
 
   return `
     <div class="video-wrapper">
