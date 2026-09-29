@@ -85,7 +85,7 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO — RESPONSIVO ===== */
+  /* ===== VÍDEO — VERTICAL (9:16) em todas as telas ===== */
   .video-wrapper {
     position: relative;
     padding-bottom: 177.78%;
@@ -110,14 +110,7 @@
 
   @media (min-width: 768px) {
     .video-wrapper {
-      padding-bottom: 56.25%;
-      max-width: 640px;
-    }
-    .video-wrapper iframe {
-      top: -50px;
-      left: -2px;
-      width: calc(100% + 4px);
-      height: calc(100% + 100px);
+      max-width: 480px;
     }
   }
 
@@ -224,10 +217,12 @@
   .choice-card-image {
     width: 100%;
     height: 140px;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     border-radius: 10px;
     margin-bottom: 16px;
     display: block;
+    background: rgba(255,255,255,0.03);
   }
   .choice-card .icon { font-size: 44px; margin-bottom: 12px; }
   .choice-card h3 { font-size: 19px; margin-bottom: 8px; color: #fff; }
@@ -249,7 +244,7 @@
     overflow: hidden;
   }
   .product-header-icon img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
   }
   .product-header-label {
     font-size: 11px; color: #888; text-transform: uppercase;
@@ -595,7 +590,7 @@
 <script>
 const API_URL = "";
 const FIXED_PASSWORD = "admin123";
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB antes de comprimir
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
 const userView = document.getElementById("userView");
 const loginScreen = document.getElementById("loginScreen");
@@ -1223,7 +1218,7 @@ document.getElementById("saveSettingsBtn").onclick = async () => {
 };
 
 // ============================================================
-// COMPRESSÃO DE IMAGEM — agressiva (800x800 @ 75%)
+// COMPRESSÃO DE IMAGEM — 800x800 @ 75%
 // ============================================================
 
 function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
