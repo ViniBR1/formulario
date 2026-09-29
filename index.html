@@ -85,33 +85,48 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO — VERTICAL (9:16) em todas as telas ===== */
+  /* ===== VÍDEO ADAPTATIVO ===== */
   .video-wrapper {
     position: relative;
-    padding-bottom: 177.78%;
     height: 0;
     margin-bottom: 24px;
     border-radius: 12px;
     overflow: hidden;
     background: #000;
-    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
+    transition: padding-bottom 0.3s ease, max-width 0.3s ease;
+  }
+
+  /* Vertical (padrão) */
+  .video-wrapper.vertical {
+    padding-bottom: 177.78%;
+    max-width: 400px;
+  }
+
+  /* Horizontal */
+  .video-wrapper.horizontal {
+    padding-bottom: 56.25%;
+    max-width: 640px;
+  }
+
+  /* Desktop: vertical um pouco maior */
+  @media (min-width: 768px) {
+    .video-wrapper.vertical {
+      max-width: 480px;
+    }
+    .video-wrapper.horizontal {
+      max-width: 720px;
+    }
   }
 
   .video-wrapper iframe {
     position: absolute;
-    top: -60px;
-    left: -2px;
-    width: calc(100% + 4px);
-    height: calc(100% + 120px);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: none;
-  }
-
-  @media (min-width: 768px) {
-    .video-wrapper {
-      max-width: 480px;
-    }
   }
 
   textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
@@ -611,6 +626,38 @@ let respondent = { name: "", phone: "", sessionId: "" };
 const isAdminMode = () => window.location.hash === "#admin";
 
 // ============================================================
+// CACHE DE PROPORÇÃO DE VÍDEOS
+// ============================================================
+const videoOrientationCache = {};
+
+// Detecta orientação do vídeo do YouTube pela thumbnail
+// Retorna 'vertical' ou 'horizontal' (ou 'horizontal' como fallback)
+function getYouTubeOrientation(videoId) {
+  return new Promise((resolve) => {
+    if (videoOrientationCache[videoId]) {
+      return resolve(videoOrientationCache[videoId]);
+    }
+
+    const img = new Image();
+    // hqdefault = 480x360 (sempre 4:3, não serve)
+    // maxresdefault = tamanho original do vídeo (geralmente)
+    // O jeito mais confiável: usar mqdefault (320x180) vs maxresdefault
+    // Vamos usar maxresdefault e ver as dimensões reais
+    img.onload = () => {
+      const orientation = img.naturalHeight > img.naturalWidth ? "vertical" : "horizontal";
+      videoOrientationCache[videoId] = orientation;
+      resolve(orientation);
+    };
+    img.onerror = () => {
+      // Fallback: horizontal
+      videoOrientationCache[videoId] = "horizontal";
+      resolve("horizontal");
+    };
+    img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  });
+}
+
+// ============================================================
 // HELPERS
 // ============================================================
 
@@ -659,10 +706,10 @@ function updateProgress() {
 }
 
 // ============================================================
-// VÍDEO
+// VÍDEO — ADAPTATIVO POR ORIENTAÇÃO
 // ============================================================
 
-function renderVideo(url) {
+async function renderVideo(url) {
   if (!url) return "";
 
   if (isYouTube(url)) {
@@ -680,6 +727,7 @@ function renderVideo(url) {
         </div>`;
     }
 
+    const orientation = await getYouTubeOrientation(videoId);
     const params = [
       "rel=0", "modestbranding=1", "playsinline=1",
       "showinfo=0", "iv_load_policy=3", "cc_load_policy=0",
@@ -687,7 +735,7 @@ function renderVideo(url) {
     ].join("&");
 
     return `
-      <div class="video-wrapper">
+      <div class="video-wrapper ${orientation}">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}?${params}"
           allow="encrypted-media"
@@ -697,11 +745,12 @@ function renderVideo(url) {
       </div>`;
   }
 
+  // Google Drive → sempre horizontal
   const driveId = extractDriveId(url);
   if (!driveId) return "";
 
   return `
-    <div class="video-wrapper">
+    <div class="video-wrapper horizontal">
       <iframe 
         src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
         allow="encrypted-media"
@@ -909,7 +958,7 @@ function renderIdentifyScreen() {
 // FORMULÁRIO
 // ============================================================
 
-function renderQuestion() {
+async function renderQuestion() {
   if (current >= questions.length) {
     progressBar.style.width = "100%";
 
@@ -999,13 +1048,16 @@ function renderQuestion() {
     inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
   }
 
+  // Renderiza o vídeo (aguarda a orientação)
+  const videoHtml = await renderVideo(q.video_url);
+
   app.innerHTML = `
     <div class="step">
       ${getLogoHtml()}
       ${renderProductHeader()}
       <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
       <div class="question">${escapeHtml(q.text)}</div>
-      ${renderVideo(q.video_url)}
+      ${videoHtml}
       ${inputHtml}
       <div class="actions">
         ${current > 0 ? '<button class="btn btn-secondary" id="prevBtn">Voltar</button>' : ''}
