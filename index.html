@@ -85,51 +85,68 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO — container adaptativo ===== */
+  /* ===== VÍDEO ===== */
   .video-wrapper {
     position: relative;
-    height: 0;
-    margin-bottom: 24px;
-    border-radius: 12px;
+    margin: 0 auto 24px;
+    border-radius: 16px;
     overflow: hidden;
     background: #000;
-    margin-left: auto;
-    margin-right: auto;
-    transition: padding-bottom 0.3s ease, max-width 0.3s ease;
-    /* Padrão inicial: horizontal até saber a orientação real */
-    padding-bottom: 56.25%;
-    max-width: 640px;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
 
-  /* Vertical detectado */
-  .video-wrapper.vertical {
-    padding-bottom: 177.78%;
-    max-width: 400px;
+  /* Wrapper que aplica o crop pra esconder UI do YouTube */
+  .video-crop {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
-  /* Horizontal detectado */
+  /* ===== HORIZONTAL (16:9) ===== */
   .video-wrapper.horizontal {
-    padding-bottom: 56.25%;
+    width: 100%;
     max-width: 640px;
+    aspect-ratio: 16 / 9;
   }
 
-  /* Desktop ajusta tamanhos */
+  .video-wrapper.horizontal .video-crop iframe {
+    position: absolute;
+    top: -55px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 110px);
+    border: none;
+    pointer-events: auto;
+  }
+
+  /* ===== VERTICAL (9:16) — Shorts ===== */
+  .video-wrapper.vertical {
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 9 / 16;
+    /* Efeito de brilho para destacar como Shorts */
+    border: 2px solid rgba(168,85,247,0.25);
+  }
+
+  .video-wrapper.vertical .video-crop iframe {
+    position: absolute;
+    top: -55px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 110px);
+    border: none;
+    pointer-events: auto;
+  }
+
   @media (min-width: 768px) {
     .video-wrapper.vertical {
-      max-width: 480px;
+      max-width: 380px;
     }
     .video-wrapper.horizontal {
       max-width: 720px;
     }
-  }
-
-  .video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
   }
 
   textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
@@ -573,7 +590,7 @@
         <label>Link do vídeo (YouTube ou Google Drive)</label>
         <input type="text" id="newVideo" placeholder="https://youtu.be/ID">
         <div style="font-size:11px;color:#666;margin-top:4px;">
-          Cole o link normal do YouTube. Ex: https://youtu.be/abc
+          Cole o link normal do YouTube. Ex: https://youtu.be/abc ou https://youtube.com/shorts/abc
         </div>
       </div>
       <div class="form-group">
@@ -629,11 +646,6 @@ let respondent = { name: "", phone: "", sessionId: "" };
 const isAdminMode = () => window.location.hash === "#admin";
 
 // ============================================================
-// CACHE DE ORIENTAÇÃO (por ID de vídeo)
-// ============================================================
-const orientationCache = {};
-
-// ============================================================
 // HELPERS
 // ============================================================
 
@@ -670,6 +682,11 @@ function isYouTube(url) {
   return url.includes("youtube.com") || url.includes("youtu.be");
 }
 
+function isYouTubeShorts(url) {
+  if (!url) return false;
+  return url.includes("/shorts/");
+}
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str || "";
@@ -682,74 +699,13 @@ function updateProgress() {
 }
 
 // ============================================================
-// DETECÇÃO DE ORIENTAÇÃO VIA API DO YOUTUBE
-// ============================================================
-// Carrega o player escondido, espera o "ready", pergunta as
-// dimensões reais do vídeo e ajusta o container.
+// VÍDEO — MODO ULTRA CLEAN + DETECÇÃO DE SHORTS
 // ============================================================
 
-function detectOrientation(videoId) {
-  return new Promise((resolve) => {
-    if (orientationCache[videoId]) {
-      return resolve(orientationCache[videoId]);
-    }
-
-    // Cria iframe escondido
-    const hidden = document.createElement("div");
-    hidden.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;";
-    hidden.innerHTML = `
-      <iframe id="yt-detect-${videoId}" 
-              src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&controls=0" 
-              allow="encrypted-media">
-      </iframe>`;
-    document.body.appendChild(hidden);
-
-    const cleanup = (result) => {
-      try { document.body.removeChild(hidden); } catch(_) {}
-      orientationCache[videoId] = result;
-      resolve(result);
-    };
-
-    // Timeout de segurança (3s)
-    const timeout = setTimeout(() => {
-      cleanup("horizontal");
-    }, 3000);
-
-    window.addEventListener("message", function onMessage(e) {
-      if (e.source !== document.getElementById(`yt-detect-${videoId}`)?.contentWindow) return;
-      try {
-        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        if (data.event === "infoDelivery" && data.info && data.info.videoData) {
-          const vd = data.info.videoData;
-          clearTimeout(timeout);
-          window.removeEventListener("message", onMessage);
-          const orientation = vd.isVertical ? "vertical" : "horizontal";
-          cleanup(orientation);
-        }
-      } catch (_) {}
-    });
-
-    // Envia comando infoDelivery
-    setTimeout(() => {
-      const iframe = document.getElementById(`yt-detect-${videoId}`);
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(JSON.stringify({
-          event: "command",
-          func: "getVideoData",
-          args: []
-        }), "*");
-      }
-    }, 1500);
-  });
-}
-
-// ============================================================
-// VÍDEO — ADAPTATIVO COM DETECÇÃO REAL
-// ============================================================
-
-async function renderVideo(url) {
+function renderVideo(url) {
   if (!url) return "";
 
+  // ============ YOUTUBE ============
   if (isYouTube(url)) {
     const videoId = extractYouTubeId(url);
     if (!videoId) {
@@ -765,38 +721,55 @@ async function renderVideo(url) {
         </div>`;
     }
 
-    // Detecta orientação
-    const orientation = await detectOrientation(videoId);
+    // Detecta se é Shorts
+    const isShorts = isYouTubeShorts(url);
+    const orientation = isShorts ? "vertical" : "horizontal";
 
+    // Parâmetros ULTRA CLEAN
     const params = [
-      "rel=0", "modestbranding=1", "playsinline=1",
-      "showinfo=0", "iv_load_policy=3", "cc_load_policy=0",
-      "disablekb=1", "fs=0", "color=white", "enablejsapi=0"
+      "rel=0",                // sem vídeos relacionados
+      "modestbranding=1",     // logo mínima
+      "playsinline=1",        // não abre tela cheia no mobile
+      "showinfo=0",           // esconde título e avatar
+      "iv_load_policy=3",     // esconde anotações
+      "cc_load_policy=0",     // sem legendas forçadas
+      "disablekb=1",          // desativa atalhos de teclado
+      "fs=0",                 // esconde botão tela cheia
+      "color=white",          // barra branca
+      "enablejsapi=0",        // sem API JS externa
+      "controls=1",           // mantém só o essencial (play, volume)
+      "autohide=1",           // esconde controles sozinhos
+      "widget_referrer=",     // sem widget
+      "origin="               // sem origin
     ].join("&");
 
     return `
       <div class="video-wrapper ${orientation}">
-        <iframe 
-          src="https://www.youtube-nocookie.com/embed/${videoId}?${params}"
-          allow="encrypted-media"
-          allowfullscreen
-          loading="lazy">
-        </iframe>
+        <div class="video-crop">
+          <iframe 
+            src="https://www.youtube-nocookie.com/embed/${videoId}?${params}"
+            allow="encrypted-media"
+            allowfullscreen="false"
+            loading="lazy">
+          </iframe>
+        </div>
       </div>`;
   }
 
-  // Google Drive → horizontal
+  // ============ GOOGLE DRIVE ============
   const driveId = extractDriveId(url);
   if (!driveId) return "";
 
   return `
     <div class="video-wrapper horizontal">
-      <iframe 
-        src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
-        allow="encrypted-media"
-        allowfullscreen
-        loading="lazy">
-      </iframe>
+      <div class="video-crop">
+        <iframe 
+          src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
+          allow="encrypted-media"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
     </div>`;
 }
 
@@ -998,7 +971,7 @@ function renderIdentifyScreen() {
 // FORMULÁRIO
 // ============================================================
 
-async function renderQuestion() {
+function renderQuestion() {
   if (current >= questions.length) {
     progressBar.style.width = "100%";
 
@@ -1088,16 +1061,13 @@ async function renderQuestion() {
     inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
   }
 
-  // Renderiza o vídeo (aguarda a detecção de orientação)
-  const videoHtml = await renderVideo(q.video_url);
-
   app.innerHTML = `
     <div class="step">
       ${getLogoHtml()}
       ${renderProductHeader()}
       <div class="step-number">PERGUNTA ${current + 1} DE ${questions.length}</div>
       <div class="question">${escapeHtml(q.text)}</div>
-      ${videoHtml}
+      ${renderVideo(q.video_url)}
       ${inputHtml}
       <div class="actions">
         ${current > 0 ? '<button class="btn btn-secondary" id="prevBtn">Voltar</button>' : ''}
@@ -1453,7 +1423,7 @@ async function loadQuestions() {
             </div>
             <div class="card-meta">
               Tipo: ${q.type} • Ordem: ${q.order_index}
-              ${q.video_url ? `• 🎬 ${isYouTube(q.video_url) ? "YouTube" : "Drive"}` : ''}
+              ${q.video_url ? `• 🎬 ${isYouTubeShorts(q.video_url) ? "Shorts" : (isYouTube(q.video_url) ? "YouTube" : "Drive")}` : ''}
             </div>
           </div>
           <div style="display:flex;gap:8px;">
