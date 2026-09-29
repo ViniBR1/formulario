@@ -85,7 +85,7 @@
   }
   .question { font-size: 26px; font-weight: 700; margin-bottom: 24px; line-height: 1.3; }
 
-  /* ===== VÍDEO ADAPTATIVO ===== */
+  /* ===== VÍDEO — container adaptativo ===== */
   .video-wrapper {
     position: relative;
     height: 0;
@@ -96,21 +96,24 @@
     margin-left: auto;
     margin-right: auto;
     transition: padding-bottom 0.3s ease, max-width 0.3s ease;
+    /* Padrão inicial: horizontal até saber a orientação real */
+    padding-bottom: 56.25%;
+    max-width: 640px;
   }
 
-  /* Vertical (padrão) */
+  /* Vertical detectado */
   .video-wrapper.vertical {
     padding-bottom: 177.78%;
     max-width: 400px;
   }
 
-  /* Horizontal */
+  /* Horizontal detectado */
   .video-wrapper.horizontal {
     padding-bottom: 56.25%;
     max-width: 640px;
   }
 
-  /* Desktop: vertical um pouco maior */
+  /* Desktop ajusta tamanhos */
   @media (min-width: 768px) {
     .video-wrapper.vertical {
       max-width: 480px;
@@ -626,36 +629,9 @@ let respondent = { name: "", phone: "", sessionId: "" };
 const isAdminMode = () => window.location.hash === "#admin";
 
 // ============================================================
-// CACHE DE PROPORÇÃO DE VÍDEOS
+// CACHE DE ORIENTAÇÃO (por ID de vídeo)
 // ============================================================
-const videoOrientationCache = {};
-
-// Detecta orientação do vídeo do YouTube pela thumbnail
-// Retorna 'vertical' ou 'horizontal' (ou 'horizontal' como fallback)
-function getYouTubeOrientation(videoId) {
-  return new Promise((resolve) => {
-    if (videoOrientationCache[videoId]) {
-      return resolve(videoOrientationCache[videoId]);
-    }
-
-    const img = new Image();
-    // hqdefault = 480x360 (sempre 4:3, não serve)
-    // maxresdefault = tamanho original do vídeo (geralmente)
-    // O jeito mais confiável: usar mqdefault (320x180) vs maxresdefault
-    // Vamos usar maxresdefault e ver as dimensões reais
-    img.onload = () => {
-      const orientation = img.naturalHeight > img.naturalWidth ? "vertical" : "horizontal";
-      videoOrientationCache[videoId] = orientation;
-      resolve(orientation);
-    };
-    img.onerror = () => {
-      // Fallback: horizontal
-      videoOrientationCache[videoId] = "horizontal";
-      resolve("horizontal");
-    };
-    img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-  });
-}
+const orientationCache = {};
 
 // ============================================================
 // HELPERS
@@ -706,7 +682,69 @@ function updateProgress() {
 }
 
 // ============================================================
-// VÍDEO — ADAPTATIVO POR ORIENTAÇÃO
+// DETECÇÃO DE ORIENTAÇÃO VIA API DO YOUTUBE
+// ============================================================
+// Carrega o player escondido, espera o "ready", pergunta as
+// dimensões reais do vídeo e ajusta o container.
+// ============================================================
+
+function detectOrientation(videoId) {
+  return new Promise((resolve) => {
+    if (orientationCache[videoId]) {
+      return resolve(orientationCache[videoId]);
+    }
+
+    // Cria iframe escondido
+    const hidden = document.createElement("div");
+    hidden.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;";
+    hidden.innerHTML = `
+      <iframe id="yt-detect-${videoId}" 
+              src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&controls=0" 
+              allow="encrypted-media">
+      </iframe>`;
+    document.body.appendChild(hidden);
+
+    const cleanup = (result) => {
+      try { document.body.removeChild(hidden); } catch(_) {}
+      orientationCache[videoId] = result;
+      resolve(result);
+    };
+
+    // Timeout de segurança (3s)
+    const timeout = setTimeout(() => {
+      cleanup("horizontal");
+    }, 3000);
+
+    window.addEventListener("message", function onMessage(e) {
+      if (e.source !== document.getElementById(`yt-detect-${videoId}`)?.contentWindow) return;
+      try {
+        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+        if (data.event === "infoDelivery" && data.info && data.info.videoData) {
+          const vd = data.info.videoData;
+          clearTimeout(timeout);
+          window.removeEventListener("message", onMessage);
+          const orientation = vd.isVertical ? "vertical" : "horizontal";
+          cleanup(orientation);
+        }
+      } catch (_) {}
+    });
+
+    // Envia comando infoDelivery
+    setTimeout(() => {
+      const iframe = document.getElementById(`yt-detect-${videoId}`);
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: "command",
+          func: "getVideoData",
+          args: []
+        }), "*");
+      }
+    }, 1500);
+  });
+}
+
+// ============================================================
+// VÍDEO — ADAPTATIVO COM DETECÇÃO REAL
 // ============================================================
 
 async function renderVideo(url) {
@@ -727,17 +765,19 @@ async function renderVideo(url) {
         </div>`;
     }
 
-    const orientation = await getYouTubeOrientation(videoId);
+    // Detecta orientação
+    const orientation = await detectOrientation(videoId);
+
     const params = [
       "rel=0", "modestbranding=1", "playsinline=1",
       "showinfo=0", "iv_load_policy=3", "cc_load_policy=0",
-      "disablekb=1", "fs=0", "color=white"
+      "disablekb=1", "fs=0", "color=white", "enablejsapi=0"
     ].join("&");
 
     return `
       <div class="video-wrapper ${orientation}">
         <iframe 
-          src="https://www.youtube.com/embed/${videoId}?${params}"
+          src="https://www.youtube-nocookie.com/embed/${videoId}?${params}"
           allow="encrypted-media"
           allowfullscreen
           loading="lazy">
@@ -745,7 +785,7 @@ async function renderVideo(url) {
       </div>`;
   }
 
-  // Google Drive → sempre horizontal
+  // Google Drive → horizontal
   const driveId = extractDriveId(url);
   if (!driveId) return "";
 
@@ -1048,7 +1088,7 @@ async function renderQuestion() {
     inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
   }
 
-  // Renderiza o vídeo (aguarda a orientação)
+  // Renderiza o vídeo (aguarda a detecção de orientação)
   const videoHtml = await renderVideo(q.video_url);
 
   app.innerHTML = `
@@ -1270,7 +1310,7 @@ document.getElementById("saveSettingsBtn").onclick = async () => {
 };
 
 // ============================================================
-// COMPRESSÃO DE IMAGEM — 800x800 @ 75%
+// COMPRESSÃO DE IMAGEM
 // ============================================================
 
 function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
