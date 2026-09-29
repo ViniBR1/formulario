@@ -10,7 +10,8 @@ import { fileURLToPath } from "url";
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const FALLBACK_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
@@ -82,7 +83,6 @@ app.post("/api/responses", async (req, res) => {
       respondent_name, respondent_phone
     } = req.body;
 
-    // Detecta produto pela session_id se não vier no body
     let product = req.body.product;
     if (!product && typeof session_id === "string") {
       if (session_id.startsWith("mentoria")) product = "mentoria";
@@ -136,7 +136,6 @@ app.get("/api/admin/sessions", requireAuth, async (req, res) => {
     const sessions = {};
     for (const row of rows) {
       if (!sessions[row.session_id]) {
-        // Fallback: se product vier null, tenta extrair do session_id
         let product = row.product;
         if (!product && typeof row.session_id === "string") {
           if (row.session_id.startsWith("mentoria")) product = "mentoria";
@@ -239,6 +238,7 @@ app.put("/api/admin/settings", requireAuth, async (req, res) => {
     }
     res.json({ ok: true });
   } catch (e) {
+    console.error("Erro em /api/admin/settings:", e);
     res.status(500).json({ error: e.message });
   }
 });
