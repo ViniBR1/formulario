@@ -1,6 +1,5 @@
 // server.js — API + serve o HTML
 import "dotenv/config";
-
 import express from "express";
 import cors from "cors";
 import { neon } from "@neondatabase/serverless";
@@ -17,22 +16,18 @@ const DATABASE_URL = process.env.DATABASE_URL;
 const FALLBACK_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const PORT = process.env.PORT || 3000;
 
-// ============================================================
-// Email (Resend)
-// ============================================================
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || "mvini440@gmail.com";
 
-// ============================================================
-
-if (!DATABASE_URL) console.error("\n⚠️  DATABASE_URL não configurada!\n");
-if (!RESEND_API_KEY) console.warn("\n⚠️  RESEND_API_KEY não configurada — email desativado.\n");
+if (!DATABASE_URL) console.error("⚠️  DATABASE_URL não configurada!");
+if (!RESEND_API_KEY) console.warn("⚠️  RESEND_API_KEY não configurada — email desativado.");
 
 const sql = neon(DATABASE_URL || "");
 
 // ============================================================
-// Autenticação
+// AUTENTICAÇÃO
 // ============================================================
+
 async function checkPassword(password) {
   const clean = (password || "").trim();
   if (clean === "admin123") return true;
@@ -58,7 +53,7 @@ async function requireAuth(req, res, next) {
 }
 
 // ============================================================
-// EMAIL — Envio via Resend
+// EMAIL VIA RESEND
 // ============================================================
 
 function escapeHtmlServer(str) {
@@ -72,7 +67,7 @@ function escapeHtmlServer(str) {
 
 async function sendNotificationEmail(sessionData) {
   if (!RESEND_API_KEY) {
-    console.log("📧 RESEND_API_KEY não configurada — pulando envio de email.");
+    console.log("📧 RESEND_API_KEY não configurada — pulando envio.");
     return { ok: false, error: "no_api_key" };
   }
 
@@ -102,14 +97,12 @@ async function sendNotificationEmail(sessionData) {
     <head><meta charset="UTF-8"></head>
     <body style="font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: #f4f4f7; margin: 0; padding: 24px;">
       <div style="max-width: 640px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-        
         <div style="background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; padding: 24px;">
           <h1 style="margin: 0; font-size: 22px;">🎸 Nova resposta recebida</h1>
           <p style="margin: 8px 0 0; font-size: 14px; opacity: 0.9;">
             ${escapeHtmlServer(courseName)}
           </p>
         </div>
-
         <div style="padding: 24px;">
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <tr>
@@ -132,20 +125,14 @@ async function sendNotificationEmail(sessionData) {
               </td>
             </tr>
           </table>
-
-          <h2 style="font-size: 16px; color: #6366f1; margin: 24px 0 12px;">
-            Respostas
-          </h2>
-
+          <h2 style="font-size: 16px; color: #6366f1; margin: 24px 0 12px;">Respostas</h2>
           <table style="width: 100%; border-collapse: collapse; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
             ${answersHtml}
           </table>
-
           <p style="margin-top: 24px; font-size: 12px; color: #999; text-align: center;">
             Sessão: ${escapeHtmlServer(sessionId)}
           </p>
         </div>
-
       </div>
     </body>
     </html>
@@ -194,6 +181,7 @@ app.get("/api/courses", async (req, res) => {
     `;
     res.json(rows);
   } catch (e) {
+    console.error("Erro em /api/courses:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -218,11 +206,11 @@ app.get("/api/questions", async (req, res) => {
     }
     res.json(rows);
   } catch (e) {
+    console.error("Erro em /api/questions:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
-// Salvar resposta + enviar email se for a última
 app.post("/api/responses", async (req, res) => {
   try {
     const {
@@ -248,37 +236,42 @@ app.post("/api/responses", async (req, res) => {
     `;
 
     if (is_last_question) {
-      const allAnswers = await sql`
-        SELECT r.answer, q.text AS question_text, q.order_index
-        FROM responses r
-        LEFT JOIN questions q ON q.id = r.question_id
-        WHERE r.session_id = ${session_id}
-        ORDER BY q.order_index ASC, r.id ASC
-      `;
-
-      let courseName = product;
       try {
-        const courseRows = await sql`
-          SELECT name FROM courses WHERE slug = ${product} LIMIT 1
+        const allAnswers = await sql`
+          SELECT r.answer, q.text AS question_text, q.order_index
+          FROM responses r
+          LEFT JOIN questions q ON q.id = r.question_id
+          WHERE r.session_id = ${session_id}
+          ORDER BY q.order_index ASC, r.id ASC
         `;
-        if (courseRows.length) courseName = courseRows[0].name;
-      } catch (_) {}
 
-      sendNotificationEmail({
-        courseName,
-        respondentName: respondent_name || "Anônimo",
-        respondentPhone: respondent_phone || "",
-        answers: allAnswers.map(a => ({
-          question: a.question_text || "(pergunta removida)",
-          answer: a.answer
-        })),
-        finishedAt: new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
-        sessionId: session_id
-      }).catch(err => console.error("Erro ao enviar email:", err));
+        let courseName = product;
+        try {
+          const courseRows = await sql`
+            SELECT name FROM courses WHERE slug = ${product} LIMIT 1
+          `;
+          if (courseRows.length) courseName = courseRows[0].name;
+        } catch (_) {}
+
+        sendNotificationEmail({
+          courseName,
+          respondentName: respondent_name || "Anônimo",
+          respondentPhone: respondent_phone || "",
+          answers: allAnswers.map(a => ({
+            question: a.question_text || "(pergunta removida)",
+            answer: a.answer
+          })),
+          finishedAt: new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
+          sessionId: session_id
+        }).catch(err => console.error("Erro ao enviar email:", err));
+      } catch (emailErr) {
+        console.error("Erro ao preparar email:", emailErr.message);
+      }
     }
 
     res.json({ ok: true });
   } catch (e) {
+    console.error("Erro em /api/responses:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -293,12 +286,13 @@ app.get("/api/settings", async (req, res) => {
     rows.forEach(r => { map[r.key] = r.value; });
     res.json(map);
   } catch (e) {
+    console.error("Erro em /api/settings:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
 // ============================================================
-// ROTAS DO ADMIN — CURSOS
+// ADMIN — CURSOS
 // ============================================================
 
 app.post("/api/admin/courses", requireAuth, async (req, res) => {
@@ -314,6 +308,7 @@ app.post("/api/admin/courses", requireAuth, async (req, res) => {
     `;
     res.json(rows[0]);
   } catch (e) {
+    console.error("Erro em POST /api/admin/courses:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -332,6 +327,7 @@ app.put("/api/admin/courses/:id", requireAuth, async (req, res) => {
     `;
     res.json(rows[0]);
   } catch (e) {
+    console.error("Erro em PUT /api/admin/courses:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -346,7 +342,7 @@ app.delete("/api/admin/courses/:id", requireAuth, async (req, res) => {
 });
 
 // ============================================================
-// ROTAS DO ADMIN
+// ADMIN — SESSIONS
 // ============================================================
 
 app.get("/api/admin/sessions", requireAuth, async (req, res) => {
@@ -390,10 +386,14 @@ app.get("/api/admin/sessions", requireAuth, async (req, res) => {
     );
     res.json(result);
   } catch (e) {
-    console.error("Erro em /api/admin/sessions:", e);
+    console.error("Erro em /api/admin/sessions:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
+
+// ============================================================
+// ADMIN — PERGUNTAS
+// ============================================================
 
 app.post("/api/admin/questions", requireAuth, async (req, res) => {
   try {
@@ -407,6 +407,7 @@ app.post("/api/admin/questions", requireAuth, async (req, res) => {
     `;
     res.json(rows[0]);
   } catch (e) {
+    console.error("Erro em POST /api/admin/questions:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -427,6 +428,7 @@ app.put("/api/admin/questions/:id", requireAuth, async (req, res) => {
     `;
     res.json(rows[0]);
   } catch (e) {
+    console.error("Erro em PUT /api/admin/questions:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -449,6 +451,10 @@ app.delete("/api/admin/sessions/:sessionId", requireAuth, async (req, res) => {
   }
 });
 
+// ============================================================
+// ADMIN — SETTINGS
+// ============================================================
+
 app.put("/api/admin/settings", requireAuth, async (req, res) => {
   try {
     const updates = req.body;
@@ -462,12 +468,15 @@ app.put("/api/admin/settings", requireAuth, async (req, res) => {
     }
     res.json({ ok: true });
   } catch (e) {
-    console.error("Erro em /api/admin/settings:", e);
+    console.error("Erro em /api/admin/settings:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
-// Rota de teste do email
+// ============================================================
+// TESTE DE EMAIL
+// ============================================================
+
 app.post("/api/admin/test-email", requireAuth, async (req, res) => {
   try {
     const result = await sendNotificationEmail({
@@ -483,6 +492,7 @@ app.post("/api/admin/test-email", requireAuth, async (req, res) => {
     });
     res.json(result);
   } catch (e) {
+    console.error("Erro em /api/admin/test-email:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
