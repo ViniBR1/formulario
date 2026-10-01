@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentoria de Contrabaixo</title>
+<title>Formulários</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -95,58 +95,59 @@
     transition: all 0.3s ease;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
+  .video-wrapper.horizontal {
+    width: 100%; max-width: 640px; aspect-ratio: 16 / 9;
+  }
+  .video-wrapper.vertical {
+    width: 100%; max-width: 340px; aspect-ratio: 9 / 16;
+    border: 2px solid rgba(168,85,247,0.25);
+  }
+  @media (min-width: 768px) {
+    .video-wrapper.vertical { max-width: 380px; }
+    .video-wrapper.horizontal { max-width: 720px; }
+  }
 
-  /* Wrapper que aplica o crop pra esconder UI do YouTube */
   .video-crop {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     overflow: hidden;
   }
 
-  /* ===== HORIZONTAL (16:9) ===== */
-  .video-wrapper.horizontal {
-    width: 100%;
-    max-width: 640px;
-    aspect-ratio: 16 / 9;
+  .video-wrapper iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; border: none;
   }
 
-  .video-wrapper.horizontal .video-crop iframe {
-    position: absolute;
-    top: -55px;
-    left: -2px;
-    width: calc(100% + 4px);
-    height: calc(100% + 110px);
-    border: none;
-    pointer-events: auto;
+  /* ===== LOADING OVERLAY DO VÍDEO ===== */
+  .video-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+    z-index: 5; transition: opacity 0.4s ease; gap: 16px;
   }
-
-  /* ===== VERTICAL (9:16) — Shorts ===== */
-  .video-wrapper.vertical {
-    width: 100%;
-    max-width: 340px;
-    aspect-ratio: 9 / 16;
-    /* Efeito de brilho para destacar como Shorts */
-    border: 2px solid rgba(168,85,247,0.25);
+  .video-loading.fade-out {
+    opacity: 0; pointer-events: none;
   }
-
-  .video-wrapper.vertical .video-crop iframe {
-    position: absolute;
-    top: -55px;
-    left: -2px;
-    width: calc(100% + 4px);
-    height: calc(100% + 110px);
-    border: none;
-    pointer-events: auto;
+  .video-loading .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid rgba(168,85,247,0.2);
+    border-top-color: #a855f7;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
-
-  @media (min-width: 768px) {
-    .video-wrapper.vertical {
-      max-width: 380px;
-    }
-    .video-wrapper.horizontal {
-      max-width: 720px;
-    }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .video-loading .loading-text {
+    color: #c084fc; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.5px;
+    animation: pulseText 1.5s ease-in-out infinite;
+  }
+  @keyframes pulseText {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  .video-loading .hint {
+    color: #666; font-size: 11px; margin-top: 4px;
   }
 
   textarea, input[type="text"], input[type="number"], input[type="password"], input[type="tel"] {
@@ -250,14 +251,10 @@
     transform: translateY(-4px);
   }
   .choice-card-image {
-    width: 100%;
-    height: 140px;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    display: block;
-    background: rgba(255,255,255,0.03);
+    width: 100%; height: 140px;
+    object-fit: contain; object-position: center;
+    border-radius: 10px; margin-bottom: 16px;
+    display: block; background: rgba(255,255,255,0.03);
   }
   .choice-card .icon { font-size: 44px; margin-bottom: 12px; }
   .choice-card h3 { font-size: 19px; margin-bottom: 8px; color: #fff; }
@@ -273,13 +270,13 @@
   }
   .product-header-info { display: flex; align-items: center; gap: 12px; }
   .product-header-icon {
-    font-size: 28px; width: 44px; height: 44px;
+    font-size: 28px; width: 48px; height: 48px;
     display: flex; align-items: center; justify-content: center;
     background: rgba(168,85,247,0.15); border-radius: 10px; flex-shrink: 0;
     overflow: hidden;
   }
   .product-header-icon img {
-    width: 100%; height: 100%; object-fit: contain;
+    width: 100%; height: 100%; object-fit: cover;
   }
   .product-header-label {
     font-size: 11px; color: #888; text-transform: uppercase;
@@ -325,93 +322,74 @@
     font-family: inherit; font-size: 14px;
   }
 
+  .course-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .course-thumb {
+    width: 60px; height: 60px; border-radius: 10px;
+    background: rgba(168,85,247,0.15);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0; font-size: 28px;
+  }
+  .course-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .course-info { flex: 1; min-width: 180px; }
+  .course-name { font-weight: 700; color: #c084fc; font-size: 16px; }
+  .course-slug { font-size: 11px; color: #666; margin-top: 2px; }
+  .course-desc { font-size: 12px; color: #999; margin-top: 4px; }
+  .course-actions { display: flex; gap: 8px; }
+
   .image-upload-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
   }
-  @media (max-width: 640px) {
-    .image-upload-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 640px) { .image-upload-grid { grid-template-columns: 1fr; } }
   .image-upload-box {
     background: rgba(255,255,255,0.03);
     border: 2px dashed rgba(168,85,247,0.3);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
+    border-radius: 12px; padding: 16px; text-align: center;
   }
-  .image-upload-box h4 {
-    font-size: 13px;
-    color: #c084fc;
-    margin-bottom: 12px;
-    font-weight: 700;
-  }
+  .image-upload-box h4 { font-size: 13px; color: #c084fc; margin-bottom: 12px; font-weight: 700; }
   .image-preview {
-    width: 100%;
-    height: 120px;
-    border-radius: 10px;
+    width: 100%; height: 120px; border-radius: 10px;
     background: rgba(255,255,255,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    margin-bottom: 12px;
-    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; margin-bottom: 12px; position: relative;
   }
-  .image-preview img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-  .image-preview .placeholder {
-    color: #555;
-    font-size: 12px;
-    text-align: center;
-    padding: 8px;
-  }
+  .image-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .image-preview .placeholder { color: #555; font-size: 12px; text-align: center; padding: 8px; }
   .image-upload-btn {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 8px;
+    display: inline-block; padding: 8px 14px; border-radius: 8px;
     background: rgba(168,85,247,0.15);
     border: 1px solid rgba(168,85,247,0.4);
-    color: #c084fc;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
+    color: #c084fc; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
     margin: 4px 2px;
   }
   .image-upload-btn:hover {
     background: rgba(168,85,247,0.25);
-    border-color: rgba(168,85,247,0.6);
-    color: #fff;
+    border-color: rgba(168,85,247,0.6); color: #fff;
   }
   .image-upload-btn input { display: none; }
   .image-remove-btn {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 8px;
+    display: inline-block; padding: 8px 14px; border-radius: 8px;
     background: rgba(239,68,68,0.15);
     border: 1px solid rgba(239,68,68,0.3);
-    color: #ef4444;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
+    color: #ef4444; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
     margin: 4px 2px;
   }
-  .image-remove-btn:hover {
-    background: rgba(239,68,68,0.25);
-    color: #fff;
+  .image-remove-btn:hover { background: rgba(239,68,68,0.25); color: #fff; }
+  .image-feedback { font-size: 11px; margin-top: 8px; min-height: 16px; }
+
+  .course-photo-preview {
+    width: 100px; height: 100px; border-radius: 12px;
+    background: rgba(168,85,247,0.1);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; margin-bottom: 10px; font-size: 36px;
   }
-  .image-feedback {
-    font-size: 11px;
-    margin-top: 8px;
-    min-height: 16px;
-  }
+  .course-photo-preview img { width: 100%; height: 100%; object-fit: contain; }
 
   .session-card {
     background: rgba(255,255,255,0.04);
@@ -440,9 +418,7 @@
     font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
     text-transform: uppercase;
   }
-  .badge-gps { background: rgba(59,130,246,0.2); color: #60a5fa; }
-  .badge-mentoria { background: rgba(168,85,247,0.2); color: #c084fc; }
-  .badge-both { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .badge-curso { background: rgba(168,85,247,0.2); color: #c084fc; }
 
   .filter-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .filter-tab {
@@ -489,12 +465,19 @@
       <button class="btn btn-secondary" id="logoutBtn">Sair</button>
     </div>
 
-    <h2>🎨 Imagens do Site</h2>
+    <h2>📚 Cursos</h2>
     <div class="card">
-      <div class="image-upload-grid">
+      <div id="coursesList"><div class="empty">Carregando...</div></div>
+      <button class="btn btn-primary" id="newCourseBtn" style="margin-top:16px;">
+        ➕ Novo curso
+      </button>
+    </div>
 
+    <h2>🎨 Logo Geral do Site</h2>
+    <div class="card">
+      <div class="image-upload-grid" style="grid-template-columns: 1fr;">
         <div class="image-upload-box">
-          <h4>Logo Geral</h4>
+          <h4>Logo (aparece no topo de tudo)</h4>
           <div class="image-preview" id="preview_logo_image">
             <div class="placeholder">Sem imagem</div>
           </div>
@@ -505,70 +488,14 @@
           <button class="image-remove-btn" data-key="logo_image">🗑️</button>
           <div class="image-feedback" id="feedback_logo_image"></div>
         </div>
-
-        <div class="image-upload-box">
-          <h4>Foto do GPS do Baixista</h4>
-          <div class="image-preview" id="preview_gps_image">
-            <div class="placeholder">Sem imagem</div>
-          </div>
-          <label class="image-upload-btn">
-            📤 Escolher
-            <input type="file" accept="image/*" data-key="gps_image">
-          </label>
-          <button class="image-remove-btn" data-key="gps_image">🗑️</button>
-          <div class="image-feedback" id="feedback_gps_image"></div>
-        </div>
-
-        <div class="image-upload-box">
-          <h4>Foto da Mentoria Online</h4>
-          <div class="image-preview" id="preview_mentoria_image">
-            <div class="placeholder">Sem imagem</div>
-          </div>
-          <label class="image-upload-btn">
-            📤 Escolher
-            <input type="file" accept="image/*" data-key="mentoria_image">
-          </label>
-          <button class="image-remove-btn" data-key="mentoria_image">🗑️</button>
-          <div class="image-feedback" id="feedback_mentoria_image"></div>
-        </div>
-
       </div>
-      <p style="font-size:11px;color:#666;margin-top:16px;text-align:center;">
-        As imagens são comprimidas automaticamente e salvas em base64 no banco de dados.
-      </p>
-    </div>
-
-    <h2>⚙️ Configurações do Site</h2>
-    <div class="card">
-      <div class="form-group">
-        <label>🔗 Link de checkout do GPS do Baixista (Hotmart)</label>
-        <input type="text" id="cfgGpsCheckout" placeholder="https://pay.hotmart.com/...">
-      </div>
-      <div class="form-group">
-        <label>🔗 Link de checkout da Mentoria Online (não usado)</label>
-        <input type="text" id="cfgMentoriaCheckout" placeholder="deixe vazio se não usar">
-      </div>
-      <div class="form-group">
-        <label>📝 Descrição do card da Mentoria Online</label>
-        <textarea id="cfgMentoriaDesc" placeholder="Aulas individuais, ao vivo..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>📝 Descrição do card do GPS do Baixista</label>
-        <textarea id="cfgGpsDesc" placeholder="Descubra seu nível e receba o acesso..."></textarea>
-      </div>
-      <button class="btn btn-primary" id="saveSettingsBtn">💾 Salvar configurações</button>
-      <span id="settingsFeedback" style="margin-left:12px;color:#4ade80;font-size:14px;"></span>
     </div>
 
     <h2 id="formTitle">➕ Nova pergunta</h2>
     <div class="card">
       <div class="form-group">
-        <label>Produto</label>
-        <select id="newProduct">
-          <option value="both">Aparece nos dois (GPS + Mentoria)</option>
-          <option value="gps">Só no GPS do Baixista</option>
-          <option value="mentoria">Só na Mentoria Online</option>
-        </select>
+        <label>Curso</label>
+        <select id="newProduct"></select>
       </div>
       <div class="form-group">
         <label>Texto da pergunta</label>
@@ -590,7 +517,7 @@
         <label>Link do vídeo (YouTube ou Google Drive)</label>
         <input type="text" id="newVideo" placeholder="https://youtu.be/ID">
         <div style="font-size:11px;color:#666;margin-top:4px;">
-          Cole o link normal do YouTube. Ex: https://youtu.be/abc ou https://youtube.com/shorts/abc
+          Cole o link normal do YouTube ou do Google Drive.
         </div>
       </div>
       <div class="form-group">
@@ -609,17 +536,91 @@
     <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
       <button class="btn btn-secondary" id="refreshBtn">🔄 Atualizar</button>
       <button class="btn btn-secondary" id="exportCsvBtn">📥 Exportar CSV</button>
+      <button class="btn btn-secondary" id="testEmailBtn">📧 Testar email</button>
     </div>
 
-    <div class="filter-tabs">
+    <div class="filter-tabs" id="filterTabs">
       <button class="filter-tab active" data-filter="all">Todas</button>
-      <button class="filter-tab" data-filter="gps">🧭 GPS do Baixista</button>
-      <button class="filter-tab" data-filter="mentoria">🎓 Mentoria Online</button>
     </div>
 
     <div id="responsesList"><div class="empty">Carregando...</div></div>
   </div>
 
+</div>
+
+<!-- MODAL: NOVO/EDITAR CURSO -->
+<div id="courseModal" class="hidden" style="
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px; overflow-y: auto;
+">
+  <div style="
+    background: #16163a;
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 16px; padding: 24px;
+    max-width: 560px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+  ">
+    <h2 id="courseModalTitle" style="margin-top:0;">➕ Novo curso</h2>
+
+    <div class="form-group">
+      <label>Foto do curso (opcional)</label>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+        <div class="course-photo-preview" id="courseImagePreview">📚</div>
+        <div>
+          <label class="image-upload-btn" style="cursor:pointer;">
+            📤 Escolher foto
+            <input type="file" accept="image/*" id="courseImageInput">
+          </label>
+          <button class="image-remove-btn" id="courseImageRemove">🗑️</button>
+          <div class="image-feedback" id="courseImageFeedback"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Nome do curso *</label>
+      <input type="text" id="courseName" placeholder="Ex: Mentoria Online">
+    </div>
+
+    <div class="form-group">
+      <label>Identificador único (slug) *</label>
+      <input type="text" id="courseSlug" placeholder="Ex: mentoria">
+      <div style="font-size:11px;color:#666;margin-top:4px;">
+        Só letras minúsculas, números e underline.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Ícone (emoji, usado se não tiver foto)</label>
+      <input type="text" id="courseIcon" placeholder="📚" maxlength="4" style="font-size:24px;text-align:center;">
+    </div>
+
+    <div class="form-group">
+      <label>Descrição (aparece no card)</label>
+      <textarea id="courseDescription" placeholder="Uma frase curta sobre o curso..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Link de checkout (opcional)</label>
+      <input type="text" id="courseCheckout" placeholder="https://pay.hotmart.com/...">
+      <div style="font-size:11px;color:#666;margin-top:4px;">
+        Se preenchido, ao terminar o formulário o aluno é redirecionado pra cá.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Ordem (menor aparece primeiro)</label>
+      <input type="number" id="courseOrder" value="0">
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" id="courseSaveBtn" style="flex:1;">💾 Salvar</button>
+      <button class="btn btn-secondary" id="courseCancelBtn">✕ Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -638,10 +639,13 @@ let current = 0;
 let answers = {};
 let currentSessions = [];
 let currentFilter = "all";
-
+let courses = [];
 let settings = {};
 let selectedProduct = null;
 let respondent = { name: "", phone: "", sessionId: "" };
+
+let editingCourseId = null;
+let courseImageBase64 = "";
 
 const isAdminMode = () => window.location.hash === "#admin";
 
@@ -687,6 +691,11 @@ function isYouTubeShorts(url) {
   return url.includes("/shorts/");
 }
 
+function isDrive(url) {
+  if (!url) return false;
+  return url.includes("drive.google.com");
+}
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str || "";
@@ -699,13 +708,14 @@ function updateProgress() {
 }
 
 // ============================================================
-// VÍDEO — MODO ULTRA CLEAN + DETECÇÃO DE SHORTS
+// VÍDEO
 // ============================================================
 
 function renderVideo(url) {
   if (!url) return "";
 
-  // ============ YOUTUBE ============
+  const uniqueId = "video_" + Math.random().toString(36).slice(2, 9);
+
   if (isYouTube(url)) {
     const videoId = extractYouTubeId(url);
     if (!videoId) {
@@ -721,61 +731,91 @@ function renderVideo(url) {
         </div>`;
     }
 
-    // Detecta se é Shorts
     const isShorts = isYouTubeShorts(url);
     const orientation = isShorts ? "vertical" : "horizontal";
 
-    // Parâmetros ULTRA CLEAN
     const params = [
-      "rel=0",                // sem vídeos relacionados
-      "modestbranding=1",     // logo mínima
-      "playsinline=1",        // não abre tela cheia no mobile
-      "showinfo=0",           // esconde título e avatar
-      "iv_load_policy=3",     // esconde anotações
-      "cc_load_policy=0",     // sem legendas forçadas
-      "disablekb=1",          // desativa atalhos de teclado
-      "fs=0",                 // esconde botão tela cheia
-      "color=white",          // barra branca
-      "enablejsapi=0",        // sem API JS externa
-      "controls=1",           // mantém só o essencial (play, volume)
-      "autohide=1",           // esconde controles sozinhos
-      "widget_referrer=",     // sem widget
-      "origin="               // sem origin
+      "rel=0", "modestbranding=1", "playsinline=1",
+      "showinfo=0", "iv_load_policy=3", "cc_load_policy=0",
+      "disablekb=1", "fs=0", "color=white", "enablejsapi=0",
+      "autohide=1", "widget_referrer=", "origin="
     ].join("&");
 
     return `
       <div class="video-wrapper ${orientation}">
         <div class="video-crop">
           <iframe 
+            id="${uniqueId}"
             src="https://www.youtube-nocookie.com/embed/${videoId}?${params}"
             allow="encrypted-media"
             allowfullscreen="false"
-            loading="lazy">
+            loading="lazy"
+            onload="hideVideoLoading('${uniqueId}')">
           </iframe>
+          <div class="video-loading" id="loading_${uniqueId}">
+            <div class="spinner"></div>
+            <div class="loading-text">Carregando vídeo...</div>
+          </div>
         </div>
       </div>`;
   }
 
-  // ============ GOOGLE DRIVE ============
   const driveId = extractDriveId(url);
   if (!driveId) return "";
+
+  const driveParams = [
+    "rm=minimal", "autoplay=1", "controls=1", "showinfo=0", "modestbranding=1"
+  ].join("&");
 
   return `
     <div class="video-wrapper horizontal">
       <div class="video-crop">
         <iframe 
-          src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
-          allow="encrypted-media"
+          id="${uniqueId}"
+          src="https://drive.google.com/file/d/${driveId}/preview?${driveParams}"
+          allow="autoplay; encrypted-media"
           allowfullscreen
-          loading="lazy">
+          loading="lazy"
+          onload="hideVideoLoading('${uniqueId}')">
         </iframe>
+        <div class="video-loading" id="loading_${uniqueId}">
+          <div class="spinner"></div>
+          <div class="loading-text">Carregando vídeo do Drive...</div>
+          <div class="hint">Isso pode levar alguns segundos</div>
+        </div>
       </div>
     </div>`;
 }
 
+function hideVideoLoading(uniqueId) {
+  setTimeout(() => {
+    const loading = document.getElementById(`loading_${uniqueId}`);
+    if (loading) {
+      loading.classList.add("fade-out");
+      setTimeout(() => loading.remove(), 400);
+    }
+  }, 800);
+}
+
+function hideVideoLoadingFallback(uniqueId) {
+  setTimeout(() => {
+    const loading = document.getElementById(`loading_${uniqueId}`);
+    if (loading) {
+      loading.classList.add("fade-out");
+      setTimeout(() => {
+        if (loading.parentNode) loading.remove();
+      }, 400);
+    }
+  }, 6000);
+}
+
 // ============================================================
-// PRODUTOS
+// CURSOS — helpers
 // ============================================================
+
+function getCourseBySlug(slug) {
+  return courses.find(c => c.slug === slug);
+}
 
 function getLogoHtml(extraClass = "") {
   if (!settings.logo_image) return "";
@@ -783,25 +823,22 @@ function getLogoHtml(extraClass = "") {
   return `<img src="${settings.logo_image}" alt="Logo" class="brand-logo${cls}">`;
 }
 
-function productBadge(product) {
-  if (product === "gps") return '<span class="badge badge-gps">🧭 GPS</span>';
-  if (product === "mentoria") return '<span class="badge badge-mentoria">🎓 Mentoria</span>';
-  return '<span class="badge badge-both">🌐 Ambos</span>';
+function productBadge(slug) {
+  const course = getCourseBySlug(slug);
+  const name = course ? course.name : slug;
+  return `<span class="badge badge-curso">${escapeHtml(name)}</span>`;
 }
 
-function productInfo(product) {
-  if (product === "mentoria") {
+function productInfo(slug) {
+  const course = getCourseBySlug(slug);
+  if (course) {
     return {
-      icon: "🎓",
-      name: "Mentoria Online",
-      image: settings.mentoria_image || null
+      icon: course.icon || "📚",
+      name: course.name,
+      image: course.image || null
     };
   }
-  return {
-    icon: "🧭",
-    name: "GPS do Baixista",
-    image: settings.gps_image || null
-  };
+  return { icon: "📚", name: slug, image: null };
 }
 
 function renderProductHeader() {
@@ -836,10 +873,12 @@ function attachChangeProductHandler() {
 }
 
 function getSessionProduct(s) {
-  if (s.product === "gps" || s.product === "mentoria") return s.product;
+  if (s.product) {
+    if (getCourseBySlug(s.product)) return s.product;
+  }
   if (typeof s.session_id === "string") {
-    if (s.session_id.startsWith("mentoria")) return "mentoria";
-    if (s.session_id.startsWith("gps")) return "gps";
+    const parts = s.session_id.split("_");
+    if (parts[0]) return parts[0];
   }
   return "gps";
 }
@@ -850,28 +889,28 @@ function getSessionProduct(s) {
 
 function renderChoiceScreen() {
   progressBar.style.width = "0%";
+
+  const cardsHtml = courses.map(c => {
+    const imageHtml = c.image
+      ? `<img src="${c.image}" alt="${escapeHtml(c.name)}" class="choice-card-image">`
+      : `<div class="icon">${c.icon || "📚"}</div>`;
+
+    return `
+      <div class="choice-card" data-product="${escapeHtml(c.slug)}">
+        ${imageHtml}
+        <h3>${escapeHtml(c.name)}</h3>
+        <p>${escapeHtml(c.description || "")}</p>
+      </div>
+    `;
+  }).join("");
+
   app.innerHTML = `
     <div class="choice-screen">
       ${getLogoHtml()}
       <h1>🎸 Bem-vindo!</h1>
       <p>Escolha por onde quer começar</p>
       <div class="choice-cards">
-        <div class="choice-card" data-product="mentoria">
-          ${settings.mentoria_image
-            ? `<img src="${settings.mentoria_image}" alt="Mentoria" class="choice-card-image">`
-            : `<div class="icon">🎓</div>`
-          }
-          <h3>Mentoria Online</h3>
-          <p>${escapeHtml(settings.mentoria_description || "Aulas individuais de contrabaixo online")}</p>
-        </div>
-        <div class="choice-card" data-product="gps">
-          ${settings.gps_image
-            ? `<img src="${settings.gps_image}" alt="GPS" class="choice-card-image">`
-            : `<div class="icon">🧭</div>`
-          }
-          <h3>GPS do Baixista</h3>
-          <p>${escapeHtml(settings.gps_description || "Responda o questionário e descubra seu nível")}</p>
-        </div>
+        ${cardsHtml}
       </div>
     </div>
   `;
@@ -896,10 +935,13 @@ async function loadQuestionsForProduct(product) {
     current = 0;
     answers = {};
 
-    if (product === "gps") {
+    const course = getCourseBySlug(product);
+    const skipIdentify = course && course.checkout_url;
+
+    if (skipIdentify) {
       respondent.name = "Anônimo";
       respondent.phone = "";
-      respondent.sessionId = `gps_anon_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      respondent.sessionId = `${product}_anon_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       renderQuestion();
     } else {
       renderIdentifyScreen();
@@ -922,7 +964,7 @@ function renderIdentifyScreen() {
       ${renderProductHeader()}
 
       <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
-      <h1>${info.name}</h1>
+      <h1>${escapeHtml(info.name)}</h1>
       <p>Antes de começar, precisamos te conhecer</p>
 
       <div class="form-group">
@@ -976,25 +1018,22 @@ function renderQuestion() {
     progressBar.style.width = "100%";
 
     const info = productInfo(selectedProduct);
-    const isGps = selectedProduct === "gps";
-    const checkoutUrl = isGps ? settings.gps_checkout_url : null;
-    const redirecting = isGps && !!checkoutUrl;
+    const course = getCourseBySlug(selectedProduct);
+    const checkoutUrl = course ? course.checkout_url : null;
+    const redirecting = !!checkoutUrl;
     const waPhone = respondent.phone ? escapeHtml(respondent.phone) : null;
 
     let finalHtml = "";
 
-    if (isGps) {
-      finalHtml = redirecting
-        ? `<p style="margin-top:20px;color:#a855f7;font-weight:600;">
-             Redirecionando para o checkout...
-           </p>
-           <p style="font-size:13px;color:#888;margin-top:10px;">
-             Se não for redirecionado,
-             <a href="${escapeHtml(checkoutUrl)}" style="color:#a855f7;">clique aqui</a>.
-           </p>`
-        : `<p style="margin-top:20px;color:#ef4444;font-size:14px;">
-             Link de checkout ainda não configurado.
-           </p>`;
+    if (redirecting) {
+      finalHtml = `
+        <p style="margin-top:20px;color:#a855f7;font-weight:600;">
+          Redirecionando para o checkout...
+        </p>
+        <p style="font-size:13px;color:#888;margin-top:10px;">
+          Se não for redirecionado,
+          <a href="${escapeHtml(checkoutUrl)}" style="color:#a855f7;">clique aqui</a>.
+        </p>`;
     } else {
       finalHtml = `
         <div style="
@@ -1012,15 +1051,14 @@ function renderQuestion() {
               <p style="font-size:14px;color:#ccc;line-height:1.6;margin:0;">
                 Nossa equipe vai entrar em contato com você pelo WhatsApp
                 ${waPhone ? `<strong style="color:#4ade80;">${waPhone}</strong>` : ''}
-                para combinar os próximos passos da sua mentoria.
+                para combinar os próximos passos.
               </p>
             </div>
           </div>
         </div>
         <p style="margin-top:20px;font-size:13px;color:#888;">
           Se preferir, você também pode nos chamar diretamente.
-        </p>
-      `;
+        </p>`;
     }
 
     app.innerHTML = `
@@ -1028,7 +1066,7 @@ function renderQuestion() {
         ${getLogoHtml()}
         <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
         <h2>✅ Obrigado${respondent.name !== "Anônimo" ? `, ${escapeHtml(respondent.name.split(" ")[0])}` : ''}!</h2>
-        <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">${info.name}</p>
+        <p style="color:#c084fc;font-weight:600;margin-bottom:8px;">${escapeHtml(info.name)}</p>
         <p>Suas respostas foram enviadas com sucesso.</p>
         ${finalHtml}
       </div>`;
@@ -1079,6 +1117,15 @@ function renderQuestion() {
 
   updateProgress();
 
+  setTimeout(() => {
+    document.querySelectorAll('[id^="loading_video_"]').forEach(loading => {
+      const id = loading.id.replace("loading_", "");
+      if (!loading.classList.contains("fade-out")) {
+        hideVideoLoadingFallback(id);
+      }
+    });
+  }, 100);
+
   const nextBtn = document.getElementById("nextBtn");
   const prevBtn = document.getElementById("prevBtn");
 
@@ -1125,7 +1172,7 @@ async function submitAnswer(questionId, answer) {
   btn.textContent = "Enviando...";
 
   const isLast = current === questions.length - 1;
-  if (isLast && selectedProduct === "mentoria") {
+  if (isLast) {
     const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
     if (phoneMatch) respondent.phone = phoneMatch[0].trim();
   }
@@ -1140,7 +1187,8 @@ async function submitAnswer(questionId, answer) {
         session_id: respondent.sessionId,
         respondent_name: respondent.name,
         respondent_phone: respondent.phone,
-        product: selectedProduct
+        product: selectedProduct,
+        is_last_question: isLast
       })
     });
     current++;
@@ -1158,8 +1206,17 @@ async function submitAnswer(questionId, answer) {
 
 async function initForm() {
   try {
-    const sRes = await fetch(`${API_URL}/api/settings`);
+    const [sRes, cRes] = await Promise.all([
+      fetch(`${API_URL}/api/settings`),
+      fetch(`${API_URL}/api/courses`)
+    ]);
     settings = await sRes.json();
+    courses = await cRes.json();
+
+    if (!courses.length) {
+      app.innerHTML = '<div class="empty">Nenhum curso cadastrado.</div>';
+      return;
+    }
     renderChoiceScreen();
   } catch (e) {
     app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
@@ -1191,6 +1248,7 @@ function doLogin() {
   loginScreen.classList.add("hidden");
   adminView.classList.remove("hidden");
   loadSettings();
+  loadCourses();
   loadQuestions();
   loadResponses();
 }
@@ -1218,7 +1276,211 @@ document.getElementById("newType").onchange = (e) => {
 };
 
 // ============================================================
-// ADMIN — SETTINGS + IMAGENS
+// ADMIN — CURSOS
+// ============================================================
+
+async function loadCourses() {
+  const list = document.getElementById("coursesList");
+  try {
+    const res = await fetch(`${API_URL}/api/courses`);
+    courses = await res.json();
+
+    if (!courses.length) {
+      list.innerHTML = '<div class="empty">Nenhum curso cadastrado.</div>';
+    } else {
+      list.innerHTML = courses.map(c => `
+        <div class="course-item">
+          <div class="course-thumb">
+            ${c.image ? `<img src="${c.image}" alt="${escapeHtml(c.name)}">` : (c.icon || "📚")}
+          </div>
+          <div class="course-info">
+            <div class="course-name">${escapeHtml(c.name)}</div>
+            <div class="course-slug">slug: ${escapeHtml(c.slug)} • ordem: ${c.order_index}</div>
+            ${c.description ? `<div class="course-desc">${escapeHtml(c.description)}</div>` : ''}
+          </div>
+          <div class="course-actions">
+            <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px;"
+                    onclick='editCourse(${c.id})'>✏️ Editar</button>
+            <button class="btn btn-danger" onclick="deleteCourse(${c.id})">🗑️</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    const select = document.getElementById("newProduct");
+    select.innerHTML = courses.map(c =>
+      `<option value="${escapeHtml(c.slug)}">${escapeHtml(c.name)}</option>`
+    ).join("") + `<option value="both">🌐 Todos os cursos</option>`;
+
+    renderFilterTabs();
+  } catch (e) {
+    list.innerHTML = '<div class="empty">Erro ao carregar cursos.</div>';
+  }
+}
+
+function renderFilterTabs() {
+  const tabs = document.getElementById("filterTabs");
+  tabs.innerHTML = `<button class="filter-tab active" data-filter="all">Todas</button>` +
+    courses.map(c =>
+      `<button class="filter-tab" data-filter="${escapeHtml(c.slug)}">${c.icon || "📚"} ${escapeHtml(c.name)}</button>`
+    ).join("");
+
+  document.querySelectorAll(".filter-tab").forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      currentFilter = tab.dataset.filter;
+      renderResponses();
+    };
+  });
+  updateFilterCounts();
+}
+
+function updateFilterCounts() {
+  if (!Array.isArray(currentSessions)) currentSessions = [];
+  const total = currentSessions.length;
+  document.querySelectorAll(".filter-tab").forEach(tab => {
+    const f = tab.dataset.filter;
+    if (f === "all") {
+      tab.textContent = `Todas (${total})`;
+    } else {
+      const count = currentSessions.filter(s => getSessionProduct(s) === f).length;
+      const course = getCourseBySlug(f);
+      if (course) tab.textContent = `${course.icon || "📚"} ${course.name} (${count})`;
+    }
+  });
+}
+
+function openCourseModal(course = null) {
+  editingCourseId = course ? course.id : null;
+  courseImageBase64 = course ? (course.image || "") : "";
+
+  document.getElementById("courseModalTitle").textContent = course ? "✏️ Editar curso" : "➕ Novo curso";
+  document.getElementById("courseName").value = course ? course.name : "";
+  document.getElementById("courseSlug").value = course ? course.slug : "";
+  document.getElementById("courseIcon").value = course ? (course.icon || "📚") : "📚";
+  document.getElementById("courseDescription").value = course ? (course.description || "") : "";
+  document.getElementById("courseCheckout").value = course ? (course.checkout_url || "") : "";
+  document.getElementById("courseOrder").value = course ? course.order_index : 0;
+  document.getElementById("courseImageInput").value = "";
+  document.getElementById("courseImageFeedback").textContent = "";
+
+  const preview = document.getElementById("courseImagePreview");
+  if (courseImageBase64) {
+    preview.innerHTML = `<img src="${courseImageBase64}">`;
+  } else {
+    preview.textContent = course ? (course.icon || "📚") : "📚";
+  }
+
+  document.getElementById("courseModal").classList.remove("hidden");
+}
+
+function closeCourseModal() {
+  document.getElementById("courseModal").classList.add("hidden");
+  editingCourseId = null;
+  courseImageBase64 = "";
+}
+
+function editCourse(id) {
+  const c = courses.find(x => x.id === id);
+  if (!c) return;
+  openCourseModal(c);
+}
+
+async function deleteCourse(id) {
+  const c = courses.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Excluir o curso "${c.name}"? As perguntas e respostas dele NÃO serão apagadas, mas ficarão órfãs.`)) return;
+
+  try {
+    await fetch(`${API_URL}/api/admin/courses/${id}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+    loadCourses();
+  } catch (e) {
+    alert("Erro ao excluir curso.");
+  }
+}
+
+document.getElementById("newCourseBtn").onclick = () => openCourseModal();
+document.getElementById("courseCancelBtn").onclick = closeCourseModal;
+
+document.getElementById("courseImageInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const fb = document.getElementById("courseImageFeedback");
+  fb.style.color = "#a855f7";
+  fb.textContent = "Processando...";
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    fb.style.color = "#ef4444";
+    fb.textContent = `❌ Imagem muito grande (${Math.round(file.size/1024)}KB). Máx: 2MB.`;
+    return;
+  }
+
+  try {
+    const base64 = await compressImage(file, 800, 800, 0.75);
+    courseImageBase64 = base64;
+    const sizeKb = Math.round((base64.length * 0.75) / 1024);
+    document.getElementById("courseImagePreview").innerHTML = `<img src="${base64}">`;
+    fb.style.color = "#4ade80";
+    fb.textContent = `✅ Carregada! (${sizeKb}KB) - clique em Salvar pra confirmar.`;
+  } catch (err) {
+    fb.style.color = "#ef4444";
+    fb.textContent = "❌ Erro ao processar imagem.";
+  }
+});
+
+document.getElementById("courseImageRemove").onclick = () => {
+  courseImageBase64 = "";
+  document.getElementById("courseImageInput").value = "";
+  document.getElementById("courseImageFeedback").textContent = "";
+  const icon = document.getElementById("courseIcon").value || "📚";
+  document.getElementById("courseImagePreview").textContent = icon;
+};
+
+document.getElementById("courseSaveBtn").onclick = async () => {
+  const name = document.getElementById("courseName").value.trim();
+  const slug = document.getElementById("courseSlug").value.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+  const icon = document.getElementById("courseIcon").value.trim() || "📚";
+  const description = document.getElementById("courseDescription").value.trim();
+  const checkout_url = document.getElementById("courseCheckout").value.trim();
+  const order_index = parseInt(document.getElementById("courseOrder").value) || 0;
+
+  if (!name || !slug) { alert("Nome e slug são obrigatórios."); return; }
+
+  const payload = {
+    name, slug, icon, description,
+    image: courseImageBase64 || null,
+    checkout_url: checkout_url || null,
+    order_index
+  };
+
+  const isEditing = !!editingCourseId;
+  const url = isEditing
+    ? `${API_URL}/api/admin/courses/${editingCourseId}`
+    : `${API_URL}/api/admin/courses`;
+  const method = isEditing ? "PUT" : "POST";
+
+  try {
+    const res = await fetch(url, {
+      method, headers: authHeaders(), body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Erro ao salvar");
+    }
+    closeCourseModal();
+    loadCourses();
+  } catch (e) {
+    alert(e.message || "Erro ao salvar curso.");
+  }
+};
+
+// ============================================================
+// ADMIN — SETTINGS + LOGO
 // ============================================================
 
 async function loadSettings() {
@@ -1226,15 +1488,7 @@ async function loadSettings() {
     const res = await fetch(`${API_URL}/api/settings`);
     const s = await res.json();
     settings = s;
-
-    document.getElementById("cfgGpsCheckout").value = s.gps_checkout_url || "";
-    document.getElementById("cfgMentoriaCheckout").value = s.mentoria_checkout_url || "";
-    document.getElementById("cfgMentoriaDesc").value = s.mentoria_description || "";
-    document.getElementById("cfgGpsDesc").value = s.gps_description || "";
-
     updateImagePreview("logo_image", s.logo_image);
-    updateImagePreview("gps_image", s.gps_image);
-    updateImagePreview("mentoria_image", s.mentoria_image);
   } catch (e) {
     console.error("Erro ao carregar settings", e);
   }
@@ -1250,39 +1504,6 @@ function updateImagePreview(key, base64) {
   }
 }
 
-document.getElementById("saveSettingsBtn").onclick = async () => {
-  const btn = document.getElementById("saveSettingsBtn");
-  const fb = document.getElementById("settingsFeedback");
-  btn.disabled = true;
-  fb.textContent = "";
-
-  try {
-    const res = await fetch(`${API_URL}/api/admin/settings`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({
-        gps_checkout_url: document.getElementById("cfgGpsCheckout").value.trim(),
-        mentoria_checkout_url: document.getElementById("cfgMentoriaCheckout").value.trim(),
-        mentoria_description: document.getElementById("cfgMentoriaDesc").value.trim(),
-        gps_description: document.getElementById("cfgGpsDesc").value.trim()
-      })
-    });
-    if (!res.ok) throw new Error();
-    fb.style.color = "#4ade80";
-    fb.textContent = "✅ Salvo!";
-    setTimeout(() => { fb.textContent = ""; }, 2500);
-  } catch (e) {
-    fb.style.color = "#ef4444";
-    fb.textContent = "Erro ao salvar";
-  } finally {
-    btn.disabled = false;
-  }
-};
-
-// ============================================================
-// COMPRESSÃO DE IMAGEM
-// ============================================================
-
 function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1290,24 +1511,19 @@ function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
       const img = new Image();
       img.onload = () => {
         let { width, height } = img;
-
         if (width > maxWidth || height > maxHeight) {
           const ratio = Math.min(maxWidth / width, maxHeight / height);
           width = Math.round(width * ratio);
           height = Math.round(height * ratio);
         }
-
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-
         const isPng = file.type === "image/png";
         const mime = isPng ? "image/png" : "image/jpeg";
-
-        const dataUrl = canvas.toDataURL(mime, quality);
-        resolve(dataUrl);
+        resolve(canvas.toDataURL(mime, quality));
       };
       img.onerror = reject;
       img.src = e.target.result;
@@ -1316,10 +1532,6 @@ function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
     reader.readAsDataURL(file);
   });
 }
-
-// ============================================================
-// UPLOAD DE IMAGENS
-// ============================================================
 
 document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
   input.addEventListener("change", async (e) => {
@@ -1340,7 +1552,6 @@ document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
     try {
       const base64 = await compressImage(file);
       const sizeKb = Math.round((base64.length * 0.75) / 1024);
-
       updateImagePreview(key, base64);
 
       const payload = {};
@@ -1352,17 +1563,12 @@ document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
         body: JSON.stringify(payload)
       });
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status}: ${errText.slice(0, 100)}`);
-      }
-
+      if (!res.ok) throw new Error();
       settings[key] = base64;
       fb.style.color = "#4ade80";
       fb.textContent = `✅ Salva! (${sizeKb}KB)`;
       setTimeout(() => { fb.textContent = ""; }, 3000);
     } catch (err) {
-      console.error("Erro no upload:", err);
       fb.style.color = "#ef4444";
       fb.textContent = `❌ ${err.message || "Erro ao salvar"}`;
     }
@@ -1372,6 +1578,7 @@ document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
 document.querySelectorAll(".image-remove-btn").forEach(btn => {
   btn.addEventListener("click", async (e) => {
     const key = e.target.dataset.key;
+    if (!key) return;
     if (!confirm("Remover esta imagem?")) return;
 
     const fb = document.getElementById(`feedback_${key}`);
@@ -1381,14 +1588,12 @@ document.querySelectorAll(".image-remove-btn").forEach(btn => {
     try {
       const payload = {};
       payload[key] = "";
-
       const res = await fetch(`${API_URL}/api/admin/settings`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error();
-
       settings[key] = "";
       updateImagePreview(key, "");
       fb.style.color = "#4ade80";
@@ -1423,7 +1628,7 @@ async function loadQuestions() {
             </div>
             <div class="card-meta">
               Tipo: ${q.type} • Ordem: ${q.order_index}
-              ${q.video_url ? `• 🎬 ${isYouTubeShorts(q.video_url) ? "Shorts" : (isYouTube(q.video_url) ? "YouTube" : "Drive")}` : ''}
+              ${q.video_url ? `• 🎬 ${isYouTubeShorts(q.video_url) ? "Shorts" : (isYouTube(q.video_url) ? "YouTube" : (isDrive(q.video_url) ? "Drive" : "Vídeo"))}` : ''}
             </div>
           </div>
           <div style="display:flex;gap:8px;">
@@ -1454,7 +1659,7 @@ function editQuestion(q) {
   document.getElementById("newType").value = q.type || "text";
   document.getElementById("newVideo").value = q.video_url || "";
   document.getElementById("newOrder").value = q.order_index || 0;
-  document.getElementById("newProduct").value = q.product || "both";
+  document.getElementById("newProduct").value = q.product || (courses[0]?.slug || "both");
 
   if (q.type === "choice" && Array.isArray(q.options)) {
     document.getElementById("newOptions").value = q.options.join("\n");
@@ -1491,7 +1696,7 @@ function resetForm() {
   document.getElementById("newVideo").value = "";
   document.getElementById("newOptions").value = "";
   document.getElementById("newOrder").value = "0";
-  document.getElementById("newProduct").value = "both";
+  document.getElementById("newProduct").value = courses[0]?.slug || "both";
   document.getElementById("optionsGroup").style.display = "none";
 
   const addBtn = document.getElementById("addBtn");
@@ -1557,48 +1762,14 @@ async function deleteQuestion(id) {
 // ADMIN — RESPOSTAS
 // ============================================================
 
-function updateFilterCounts() {
-  if (!Array.isArray(currentSessions)) currentSessions = [];
-
-  const total = currentSessions.length;
-  const gpsCount = currentSessions.filter(s => getSessionProduct(s) === "gps").length;
-  const mentoriaCount = currentSessions.filter(s => getSessionProduct(s) === "mentoria").length;
-
-  document.querySelectorAll(".filter-tab").forEach(tab => {
-    const f = tab.dataset.filter;
-    if (f === "all") tab.textContent = `Todas (${total})`;
-    if (f === "gps") tab.textContent = `🧭 GPS do Baixista (${gpsCount})`;
-    if (f === "mentoria") tab.textContent = `🎓 Mentoria Online (${mentoriaCount})`;
-  });
-}
-
-document.querySelectorAll(".filter-tab").forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    currentFilter = tab.dataset.filter;
-    renderResponses();
-  };
-});
-
 async function loadResponses() {
   const list = document.getElementById("responsesList");
   try {
     const res = await fetch(`${API_URL}/api/admin/sessions`, { headers: authHeaders() });
 
     if (!res.ok) {
-      let errMsg = "Erro desconhecido";
-      try {
-        const errBody = await res.json();
-        errMsg = errBody.error || errMsg;
-      } catch (_) {}
       currentSessions = [];
-      list.innerHTML = `
-        <div class="empty" style="color:#ef4444;">
-          ❌ Erro ao carregar respostas (HTTP ${res.status})<br>
-          <span style="font-size:13px;color:#888;">${escapeHtml(errMsg)}</span>
-        </div>
-      `;
+      list.innerHTML = '<div class="empty" style="color:#ef4444;">Erro ao carregar respostas.</div>';
       updateFilterCounts();
       return;
     }
@@ -1665,7 +1836,9 @@ function copySession(idx) {
   const s = currentSessions[idx];
   if (!s) return;
   const prod = getSessionProduct(s);
-  let text = `${prod === "mentoria" ? "🎓 Mentoria Online" : "🧭 GPS do Baixista"}\n`;
+  const course = getCourseBySlug(prod);
+  const courseName = course ? course.name : prod;
+  let text = `📚 ${courseName}\n`;
   text += `👤 ${s.respondent_name || "(sem nome)"}\n`;
   if (s.respondent_phone) text += `📱 ${s.respondent_phone}\n`;
   text += `${new Date(s.started_at).toLocaleString("pt-BR")}\n\n`;
@@ -1704,12 +1877,13 @@ document.getElementById("exportCsvBtn").onclick = () => {
     });
   });
 
-  const headers = ["Produto", "Nome", "WhatsApp", "Data/Hora", ...questionOrder];
+  const headers = ["Curso", "Nome", "WhatsApp", "Data/Hora", ...questionOrder];
 
   const rows = source.map(s => {
     const prod = getSessionProduct(s);
+    const course = getCourseBySlug(prod);
     const row = [
-      prod === "mentoria" ? "Mentoria" : "GPS",
+      course ? course.name : prod,
       s.respondent_name || "",
       s.respondent_phone || "",
       new Date(s.started_at).toLocaleString("pt-BR")
@@ -1737,9 +1911,34 @@ document.getElementById("exportCsvBtn").onclick = () => {
 };
 
 document.getElementById("refreshBtn").onclick = () => {
+  loadSettings();
+  loadCourses();
   loadQuestions();
   loadResponses();
-  loadSettings();
+};
+
+// Teste de email
+document.getElementById("testEmailBtn").onclick = async () => {
+  const btn = document.getElementById("testEmailBtn");
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+  try {
+    const res = await fetch(`${API_URL}/api/admin/test-email`, {
+      method: "POST",
+      headers: authHeaders()
+    });
+    const data = await res.json();
+    if (data.ok) {
+      alert("✅ Email de teste enviado! Confere a caixa de entrada.");
+    } else {
+      alert("❌ Erro ao enviar:\n" + JSON.stringify(data.error));
+    }
+  } catch (e) {
+    alert("❌ Erro de conexão: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "📧 Testar email";
+  }
 };
 
 // ============================================================
@@ -1766,6 +1965,7 @@ function handleHashChange() {
       loginScreen.classList.add("hidden");
       adminView.classList.remove("hidden");
       loadSettings();
+      loadCourses();
       loadQuestions();
       loadResponses();
     } else {
