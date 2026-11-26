@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,12 +6,12 @@
 <title>Mentoria de Contrabaixo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg-primary: #06060d;
+    --bg-primary: #07070f;
     --bg-secondary: #0d0d1c;
     --bg-card: rgba(255, 255, 255, 0.04);
     --bg-card-hover: rgba(255, 255, 255, 0.07);
@@ -22,7 +20,7 @@
     --border-medium: rgba(255, 255, 255, 0.14);
     --border-strong: rgba(255, 255, 255, 0.22);
     --text-primary: #f8f8fc;
-    --text-secondary: #b8b8d0;
+    --text-secondary: #a8a8c0;
     --text-muted: #6a6a85;
     --accent-1: #7c5cff;
     --accent-2: #a855f7;
@@ -30,8 +28,7 @@
     --accent-cyan: #22d3ee;
     --accent-green: #4ade80;
     --accent-pink: #f472b6;
-    --accent-amber: #fbbf24;
-    --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #a855f7 55%, #c084fc 100%);
+    --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #a855f7 60%, #c084fc 100%);
     --accent-gradient-soft: linear-gradient(135deg, rgba(124,92,255,0.15) 0%, rgba(168,85,247,0.10) 100%);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -40,7 +37,6 @@
     --shadow-accent-strong: 0 16px 48px rgba(124, 92, 255, 0.55);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   html { scroll-behavior: smooth; }
@@ -48,58 +44,18 @@
   body {
     font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg-primary);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(124, 92, 255, 0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 85% 100%, rgba(168, 85, 247, 0.10) 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.03) 0%, transparent 60%);
+    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
-    padding: 0;
+    padding: 32px 20px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.011em;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* ===== BACKGROUND ANIMADO ===== */
-  .bg-layer {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(124, 92, 255, 0.18) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 50% at 85% 100%, rgba(168, 85, 247, 0.14) 0%, transparent 55%),
-      radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.04) 0%, transparent 60%),
-      var(--bg-primary);
-  }
-
-  .bg-orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.22;
-    z-index: -1;
-    pointer-events: none;
-    animation: floatOrb 28s ease-in-out infinite;
-  }
-  .bg-orb.orb-1 { width: 480px; height: 480px; top: -160px; left: -160px; background: radial-gradient(circle, #7c5cff 0%, transparent 70%); animation-delay: 0s; }
-  .bg-orb.orb-2 { width: 420px; height: 420px; bottom: -140px; right: -140px; background: radial-gradient(circle, #a855f7 0%, transparent 70%); animation-delay: -9s; }
-  .bg-orb.orb-3 { width: 360px; height: 360px; top: 40%; left: 60%; background: radial-gradient(circle, #22d3ee 0%, transparent 70%); opacity: 0.10; animation-delay: -16s; }
-
-  @keyframes floatOrb {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(40px, -30px) scale(1.1); }
-    66% { transform: translate(-30px, 40px) scale(0.95); }
-  }
-
-  /* Noise overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection { background: rgba(168, 85, 247, 0.35); color: #fff; }
@@ -114,8 +70,7 @@
   }
   ::-webkit-scrollbar-thumb:hover { background: rgba(124, 92, 255, 0.5); background-clip: padding-box; border: 2px solid transparent; }
 
-  .container { width: 100%; max-width: 860px; margin: 0 auto; position: relative; padding: 32px 20px 80px; }
-  body.top-progress-visible .container { padding-top: 24px; }
+  .container { width: 100%; max-width: 820px; margin: 0 auto; position: relative; }
   .hidden { display: none !important; }
 
   .brand-logo {
@@ -127,97 +82,174 @@
     margin: 0 auto 32px;
     object-fit: contain;
     filter: drop-shadow(0 8px 24px rgba(124, 92, 255, 0.25));
-    transition: transform 0.4s var(--ease-spring);
   }
-  .brand-logo:hover { transform: scale(1.03); }
 
-  /* ===== TOP PROGRESS BAR (sticky) ===== */
-  .top-progress {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(6, 6, 13, 0.7);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border-bottom: 1px solid var(--border-subtle);
-    padding: 14px 20px;
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: all 0.4s var(--ease-smooth);
-  }
-  .top-progress.visible {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  .top-progress-inner {
-    max-width: 860px;
-    margin: 0 auto;
+  /* ===== CADEADO DO ADMIN ===== */
+  .admin-lock {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: rgba(20, 20, 40, 0.55);
+    border: 1px solid var(--border-medium);
+    color: var(--accent-3);
+    font-size: 20px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
+    transition: all 0.3s var(--ease-spring);
+    z-index: 100;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: var(--shadow-md);
   }
-  .top-progress-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent-3);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    min-width: 90px;
-  }
-  .top-progress-track {
-    flex: 1;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 6px;
-    overflow: hidden;
-    position: relative;
-  }
-  .top-progress-fill {
-    height: 100%;
-    background: var(--accent-gradient);
-    background-size: 200% 100%;
-    width: 0%;
-    transition: width 0.6s var(--ease-smooth);
-    border-radius: 6px;
-    box-shadow: 0 0 16px rgba(124, 92, 255, 0.7);
-    animation: progressGlow 2.5s ease-in-out infinite;
-    position: relative;
-  }
-  .top-progress-fill::after {
-    content: '';
-    position: absolute;
-    right: -2px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(168,85,247,0.9);
-  }
-  .top-progress-pct {
-    font-size: 13px;
-    font-weight: 800;
+  .admin-lock:hover {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.6);
+    transform: scale(1.08) rotate(-4deg);
+    box-shadow: var(--shadow-accent);
     color: #fff;
-    min-width: 44px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
   }
-  @keyframes progressGlow {
-    0%, 100% { box-shadow: 0 0 16px rgba(124, 92, 255, 0.7); }
-    50% { box-shadow: 0 0 24px rgba(168, 85, 247, 0.9); }
+  .admin-lock:active { transform: scale(0.94); }
+
+  /* ===== TELA DE LOGIN ===== */
+  .login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 85vh;
+    text-align: center;
+    animation: fadeIn 0.5s var(--ease-smooth);
   }
 
-  /* Legacy progress (kept for compatibility) */
+  .lock-icon {
+    font-size: 68px;
+    margin-bottom: 24px;
+    animation: pulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 12px 32px rgba(168, 85, 247, 0.5));
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+    50% { transform: scale(1.08) translateY(-4px); opacity: 0.92; }
+  }
+
+  .login-screen h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-screen p {
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+
+  .login-screen input {
+    padding: 16px 20px;
+    font-size: 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border-medium);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    width: 300px;
+    margin-bottom: 14px;
+    outline: none;
+    text-align: center;
+    font-family: inherit;
+    transition: all 0.25s var(--ease-smooth);
+    letter-spacing: 0.08em;
+  }
+  .login-screen input:focus {
+    border-color: var(--accent-2);
+    background: rgba(168, 85, 247, 0.08);
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+  }
+
+  /* ===== BOTÕES ===== */
+  .btn {
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.25s var(--ease-smooth);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0) scale(0.98); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-primary {
+    background: var(--accent-gradient);
+    background-size: 200% 200%;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+    font-weight: 700;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+  }
+  .btn-primary:hover::before { transform: translateX(100%); }
+  .btn-primary:hover {
+    box-shadow: 0 14px 36px rgba(124, 92, 255, 0.5);
+    background-position: 100% 50%;
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: var(--border-strong);
+  }
+
+  .btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ff7676;
+    border: 1px solid rgba(239, 68, 68, 0.28);
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+  .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.28);
+    color: #fff;
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  /* ===== BARRA DE PROGRESSO ===== */
   .progress {
     height: 5px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 5px;
-    margin: 28px 0 32px;
+    margin-bottom: 44px;
     overflow: hidden;
     position: relative;
-    display: none;
   }
   .progress-bar {
     height: 100%;
@@ -227,55 +259,21 @@
     transition: width 0.6s var(--ease-smooth);
     border-radius: 5px;
     box-shadow: 0 0 16px rgba(124, 92, 255, 0.7);
+    animation: progressGlow 2.5s ease-in-out infinite;
   }
-
-  /* ===== STEP DOTS ===== */
-  .step-dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin: 0 0 32px;
-    flex-wrap: wrap;
+  @keyframes progressGlow {
+    0%, 100% { box-shadow: 0 0 16px rgba(124, 92, 255, 0.7); }
+    50% { box-shadow: 0 0 24px rgba(168, 85, 247, 0.9); }
   }
-  .step-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.12);
-    transition: all 0.4s var(--ease-spring);
-    cursor: pointer;
-  }
-  .step-dot.done {
-    background: var(--accent-3);
-    transform: scale(1);
-  }
-  .step-dot.current {
-    background: var(--accent-gradient);
-    width: 28px;
-    border-radius: 4px;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
-  }
-  .step-dot:hover:not(.current) { transform: scale(1.3); }
 
   /* ===== ANIMAÇÕES ===== */
-  .step {
-    animation: slideUp 0.55s var(--ease-out-expo);
-  }
-  .step-enter-right { animation: slideInRight 0.5s var(--ease-out-expo); }
-  .step-enter-left { animation: slideInLeft 0.5s var(--ease-out-expo); }
+  .step { animation: slideUp 0.55s var(--ease-smooth); }
 
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(28px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(40px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-40px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -284,18 +282,17 @@
   .step-number {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     color: var(--accent-3);
     font-size: 11px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     font-weight: 800;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    padding: 7px 16px;
+    padding: 6px 14px;
     background: rgba(168, 85, 247, 0.1);
     border: 1px solid rgba(168, 85, 247, 0.22);
     border-radius: 100px;
-    backdrop-filter: blur(10px);
   }
   .step-number::before {
     content: '';
@@ -304,17 +301,11 @@
     border-radius: 50%;
     background: var(--accent-3);
     box-shadow: 0 0 10px var(--accent-3);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-  @keyframes pulseDot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(0.85); }
   }
 
   .question {
-    font-family: 'Sora', 'Inter', sans-serif;
-    font-size: clamp(24px, 4.5vw, 34px);
-    font-weight: 700;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 800;
     margin-bottom: 32px;
     line-height: 1.22;
     letter-spacing: -0.03em;
@@ -400,23 +391,7 @@
   textarea::placeholder, input::placeholder { color: var(--text-muted); }
   textarea { resize: vertical; min-height: 120px; }
 
-  .textarea-wrap { position: relative; }
-  .char-count {
-    position: absolute;
-    bottom: 10px;
-    right: 14px;
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 600;
-    background: rgba(6, 6, 13, 0.7);
-    padding: 3px 8px;
-    border-radius: 8px;
-    pointer-events: none;
-    transition: color 0.2s;
-  }
-  .char-count.warn { color: var(--accent-amber); }
-
-  /* ===== OPÇÕES (Múltipla escolha) ===== */
+  /* ===== OPÇÕES ===== */
   .options {
     display: flex;
     flex-direction: column;
@@ -437,22 +412,7 @@
     font-weight: 500;
     position: relative;
     overflow: hidden;
-    animation: optionIn 0.4s var(--ease-out-expo) backwards;
   }
-  .option:nth-child(1) { animation-delay: 0.05s; }
-  .option:nth-child(2) { animation-delay: 0.1s; }
-  .option:nth-child(3) { animation-delay: 0.15s; }
-  .option:nth-child(4) { animation-delay: 0.2s; }
-  .option:nth-child(5) { animation-delay: 0.25s; }
-  .option:nth-child(6) { animation-delay: 0.3s; }
-  .option:nth-child(7) { animation-delay: 0.35s; }
-  .option:nth-child(8) { animation-delay: 0.4s; }
-
-  @keyframes optionIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   .option::after {
     content: '';
     position: absolute;
@@ -479,8 +439,8 @@
   .option.selected::after { transform: scaleY(1); }
 
   .option-letter {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -491,7 +451,6 @@
     flex-shrink: 0;
     transition: all 0.25s var(--ease-spring);
     color: var(--text-secondary);
-    position: relative;
   }
   .option.selected .option-letter {
     background: var(--accent-gradient);
@@ -499,74 +458,27 @@
     box-shadow: 0 4px 14px rgba(124, 92, 255, 0.5);
     transform: scale(1.05);
   }
-  .option-text { flex: 1; }
-  .option-check {
-    color: var(--accent-green);
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.3s var(--ease-spring);
-    font-size: 18px;
-    font-weight: 800;
-  }
-  .option.selected .option-check {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .keyboard-hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    opacity: 0.85;
-  }
-  .keyboard-hint kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid var(--border-medium);
-    border-bottom-width: 2px;
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
-  }
 
   /* ===== ESCALA ===== */
-  .scale-wrap {
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid var(--border-subtle);
-    border-radius: 20px;
-    padding: 28px 18px 18px;
-  }
   .scale {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     justify-content: center;
   }
+
   .scale-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
     background: rgba(255, 255, 255, 0.035);
     border: 1.5px solid var(--border-subtle);
     color: var(--text-primary);
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.25s var(--ease-spring);
     font-family: inherit;
-    position: relative;
   }
   .scale-btn:hover {
     border-color: rgba(168, 85, 247, 0.55);
@@ -581,30 +493,8 @@
     transform: scale(1.12);
     box-shadow: 0 10px 28px rgba(124, 92, 255, 0.55);
   }
-  .scale-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 0 4px;
-  }
-  .scale-labels span:first-child { color: var(--accent-pink); }
-  .scale-labels span:last-child { color: var(--accent-green); }
-  .scale-current-label {
-    text-align: center;
-    margin-top: 14px;
-    min-height: 22px;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent-3);
-    letter-spacing: -0.01em;
-    transition: opacity 0.2s;
-  }
 
-  .actions { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+  .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
   .actions .btn-primary { flex: 1; min-width: 140px; }
 
   .loading, .empty, .done {
@@ -636,22 +526,59 @@
   }
   .error { color: #ef4444; margin-top: 12px; font-size: 14px; font-weight: 500; }
 
+  /* ===== IDENTIFY ===== */
+  .identify-screen {
+    max-width: 500px;
+    margin: 48px auto 0;
+    text-align: center;
+    animation: slideUp 0.55s var(--ease-smooth);
+  }
+  .identify-screen h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .identify-screen p {
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .identify-screen .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .identify-screen label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .identify-screen .btn-primary {
+    width: 100%;
+    padding: 18px;
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
   /* ===== TELA DE ESCOLHA ===== */
   .choice-screen {
     text-align: center;
-    padding: 40px 0 48px;
-    min-height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    animation: slideUp 0.55s var(--ease-out-expo);
+    padding: 32px 0 48px;
+    animation: slideUp 0.55s var(--ease-smooth);
   }
   .choice-screen h1 {
-    font-family: 'Sora', 'Inter', sans-serif;
-    font-size: clamp(34px, 7vw, 48px);
-    font-weight: 800;
+    font-size: clamp(32px, 6vw, 42px);
+    font-weight: 900;
     letter-spacing: -0.035em;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     background: var(--accent-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -668,7 +595,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    max-width: 720px;
+    max-width: 700px;
     margin: 0 auto;
   }
   @media (max-width: 560px) { .choice-cards { grid-template-columns: 1fr; } }
@@ -683,7 +610,6 @@
     text-align: center;
     overflow: hidden;
     position: relative;
-    backdrop-filter: blur(10px);
   }
   .choice-card::before {
     content: '';
@@ -726,9 +652,7 @@
     margin-bottom: 18px;
     display: block;
     background: rgba(255, 255, 255, 0.02);
-    transition: transform 0.35s var(--ease-spring);
   }
-  .choice-card:hover .choice-card-image { transform: scale(1.04); }
   .choice-card .icon {
     font-size: 56px;
     margin-bottom: 14px;
@@ -737,84 +661,17 @@
   }
   .choice-card:hover .icon { transform: scale(1.1) rotate(-4deg); }
   .choice-card h3 {
-    font-family: 'Sora', 'Inter', sans-serif;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 8px;
     color: #fff;
     letter-spacing: -0.02em;
   }
   .choice-card p {
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     margin: 0;
     line-height: 1.55;
-  }
-  .choice-card-cta {
-    margin-top: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 22px;
-    border-radius: 100px;
-    background: rgba(168, 85, 247, 0.15);
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--accent-3);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: all 0.3s var(--ease-smooth);
-  }
-  .choice-card:hover .choice-card-cta {
-    background: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4);
-    transform: translateY(-2px);
-  }
-
-  /* ===== IDENTIFY ===== */
-  .identify-screen {
-    max-width: 500px;
-    margin: 48px auto 0;
-    text-align: center;
-    animation: slideUp 0.55s var(--ease-out-expo);
-  }
-  .identify-screen h1 {
-    font-family: 'Sora', 'Inter', sans-serif;
-    font-size: clamp(26px, 5vw, 34px);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    margin-bottom: 10px;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .identify-screen p {
-    color: var(--text-secondary);
-    margin-bottom: 36px;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  .identify-screen .form-group {
-    text-align: left;
-    margin-bottom: 20px;
-  }
-  .identify-screen label {
-    display: block;
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-  }
-  .identify-screen .btn-primary {
-    width: 100%;
-    padding: 18px;
-    font-size: 16px;
-    margin-top: 12px;
   }
 
   /* ===== PRODUCT HEADER ===== */
@@ -864,169 +721,12 @@
     transform: translateY(-1px);
   }
 
-  /* ===== BOTÕES ===== */
-  .btn {
-    padding: 14px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.25s var(--ease-smooth);
-    position: relative;
-    overflow: hidden;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn:active { transform: translateY(0) scale(0.98); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  .btn-primary {
-    background: var(--accent-gradient);
-    background-size: 200% 200%;
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
-    font-weight: 700;
-  }
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
-    transform: translateX(-100%);
-    transition: transform 0.6s var(--ease-smooth);
-  }
-  .btn-primary:hover::before { transform: translateX(100%); }
-  .btn-primary:hover {
-    box-shadow: 0 14px 36px rgba(124, 92, 255, 0.5);
-    background-position: 100% 50%;
-  }
-
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--text-primary);
-    border: 1px solid var(--border-medium);
-  }
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.11);
-    border-color: var(--border-strong);
-  }
-
-  .btn-danger {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ff7676;
-    border: 1px solid rgba(239, 68, 68, 0.28);
-    padding: 9px 16px;
-    font-size: 13px;
-  }
-  .btn-danger:hover {
-    background: rgba(239, 68, 68, 0.28);
-    color: #fff;
-    border-color: rgba(239, 68, 68, 0.5);
-  }
-
-  /* ===== CADEADO DO ADMIN ===== */
-  .admin-lock {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    width: 50px;
-    height: 50px;
-    border-radius: 16px;
-    background: rgba(20, 20, 40, 0.55);
-    border: 1px solid var(--border-medium);
-    color: var(--accent-3);
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s var(--ease-spring);
-    z-index: 100;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: var(--shadow-md);
-  }
-  .admin-lock:hover {
-    background: rgba(168, 85, 247, 0.2);
-    border-color: rgba(168, 85, 247, 0.6);
-    transform: scale(1.08) rotate(-4deg);
-    box-shadow: var(--shadow-accent);
-    color: #fff;
-  }
-  .admin-lock:active { transform: scale(0.94); }
-
-  /* ===== TELA DE LOGIN ===== */
-  .login-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 85vh;
-    text-align: center;
-    padding: 40px 20px;
-    animation: fadeIn 0.5s var(--ease-smooth);
-  }
-  .lock-icon {
-    font-size: 68px;
-    margin-bottom: 24px;
-    animation: pulse 3s ease-in-out infinite;
-    filter: drop-shadow(0 12px 32px rgba(168, 85, 247, 0.5));
-  }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
-    50% { transform: scale(1.08) translateY(-4px); opacity: 0.92; }
-  }
-  .login-screen h1 {
-    font-family: 'Sora', 'Inter', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin-bottom: 8px;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .login-screen p {
-    color: var(--text-secondary);
-    margin-bottom: 28px;
-    font-size: 14px;
-  }
-  .login-screen input {
-    padding: 16px 20px;
-    font-size: 16px;
-    border-radius: 14px;
-    border: 1.5px solid var(--border-medium);
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-primary);
-    width: 300px;
-    max-width: 100%;
-    margin-bottom: 14px;
-    outline: none;
-    text-align: center;
-    font-family: inherit;
-    transition: all 0.25s var(--ease-smooth);
-    letter-spacing: 0.08em;
-  }
-  .login-screen input:focus {
-    border-color: var(--accent-2);
-    background: rgba(168, 85, 247, 0.08);
-    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
-  }
-
   /* ===== ADMIN ===== */
   .admin-header {
     display: flex; justify-content: space-between;
-    align-items: center; margin: 32px 0 28px; gap: 12px; flex-wrap: wrap;
+    align-items: center; margin-bottom: 28px; gap: 12px; flex-wrap: wrap;
   }
   .admin-header h1 {
-    font-family: 'Sora', 'Inter', sans-serif;
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -1036,11 +736,10 @@
     background-clip: text;
   }
   h2 {
-    font-family: 'Sora', 'Inter', sans-serif;
     font-size: 20px;
     margin: 44px 0 18px;
     color: var(--accent-3);
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -0.02em;
     display: flex;
     align-items: center;
@@ -1250,222 +949,16 @@
     color: #fff;
     box-shadow: 0 8px 22px rgba(124, 92, 255, 0.4);
   }
-
-  /* ===== TOAST ===== */
-  .toast-stack {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-    width: 100%;
-    max-width: 380px;
-    padding: 0 16px;
-  }
-  .toast {
-    background: rgba(20, 20, 40, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid var(--border-medium);
-    border-radius: 14px;
-    padding: 14px 18px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    pointer-events: auto;
-    animation: toastIn 0.4s var(--ease-spring);
-  }
-  .toast.out { animation: toastOut 0.3s var(--ease-smooth) forwards; }
-  .toast-icon {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 800;
-    flex-shrink: 0;
-  }
-  .toast.success .toast-icon { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
-  .toast.error .toast-icon { background: rgba(239, 68, 68, 0.2); color: #ff7676; }
-  .toast.info .toast-icon { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes toastOut {
-    to { opacity: 0; transform: translateY(20px) scale(0.95); }
-  }
-
-  /* ===== CONFETE ===== */
-  .confetti-piece {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    top: -20px;
-    z-index: 999;
-    pointer-events: none;
-    animation: confettiFall linear forwards;
-  }
-  @keyframes confettiFall {
-    to {
-      transform: translateY(110vh) rotate(720deg);
-      opacity: 0;
-    }
-  }
-
-  /* ===== SUMÁRIO FINAL ===== */
-  .summary-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-subtle);
-    border-radius: 18px;
-    padding: 22px;
-    margin: 28px auto 0;
-    max-width: 560px;
-    text-align: left;
-    animation: slideUp 0.5s var(--ease-out-expo) 0.3s backwards;
-  }
-  .summary-title {
-    font-family: 'Sora', 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--accent-3);
-    font-weight: 700;
-    margin-bottom: 14px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    text-align: center;
-  }
-  .summary-row {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-q { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
-  .summary-a { font-size: 14px; color: var(--text-primary); font-weight: 500; }
-
-  /* Encouragement */
-  .encouragement {
-    text-align: center;
-    margin-top: 8px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: var(--accent-3);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  /* Done check animation */
-  .done-check {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 18px;
-    border-radius: 50%;
-    background: var(--accent-gradient);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 16px 48px rgba(124, 92, 255, 0.5);
-    animation: checkPop 0.6s var(--ease-spring);
-    position: relative;
-  }
-  .done-check::before {
-    content: '';
-    position: absolute;
-    inset: -8px;
-    border-radius: 50%;
-    border: 2px solid rgba(168, 85, 247, 0.4);
-    animation: checkRing 1.5s var(--ease-smooth) infinite;
-  }
-  .done-check svg {
-    width: 40px;
-    height: 40px;
-    stroke: #fff;
-    stroke-width: 3.5;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 50;
-    stroke-dashoffset: 50;
-    animation: checkDraw 0.5s var(--ease-smooth) 0.3s forwards;
-  }
-  @keyframes checkPop {
-    0% { transform: scale(0); opacity: 0; }
-    60% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  @keyframes checkRing {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.3); opacity: 0; }
-  }
-  @keyframes checkDraw {
-    to { stroke-dashoffset: 0; }
-  }
-
-  /* Scale label badges */
-  .scale-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-top: 6px;
-  }
-
-  /* Choice answer preview */
-  .answer-preview {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: rgba(168, 85, 247, 0.08);
-    border: 1px solid rgba(168, 85, 247, 0.25);
-    border-radius: 12px;
-    font-size: 13px;
-    color: var(--accent-3);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: fadeIn 0.3s var(--ease-smooth);
-  }
-
-  @media (max-width: 560px) {
-    body { font-size: 15px; }
-    .option { padding: 14px 16px; font-size: 15px; }
-    .scale-btn { width: 44px; height: 44px; font-size: 15px; }
-    .question { font-size: 22px; }
-    .actions { flex-direction: column-reverse; }
-    .actions .btn-primary, .actions .btn-secondary { width: 100%; }
-  }
 </style>
 </head>
 <body>
 
-<div class="bg-layer"></div>
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
-<div class="bg-orb orb-3"></div>
-
-<button class="admin-lock" id="adminLock" title="Área do Administrador" aria-label="Área do Administrador">🔒</button>
-
-<div class="toast-stack" id="toastStack" aria-live="polite"></div>
-
-<div class="top-progress" id="topProgress" role="progressbar" aria-label="Progresso do formulário">
-  <div class="top-progress-inner">
-    <div class="top-progress-label" id="topProgressLabel">Etapa 1</div>
-    <div class="top-progress-track">
-      <div class="top-progress-fill" id="topProgressFill"></div>
-    </div>
-    <div class="top-progress-pct" id="topProgressPct">0%</div>
-  </div>
-</div>
+<button class="admin-lock" id="adminLock" title="Área do Administrador">🔒</button>
 
 <div class="container">
 
   <div id="userView">
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
     <div id="app"><div class="loading">Carregando...</div></div>
   </div>
 
@@ -1629,12 +1122,8 @@ const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 const userView = document.getElementById("userView");
 const loginScreen = document.getElementById("loginScreen");
 const adminView = document.getElementById("adminView");
+const progressBar = document.getElementById("progressBar");
 const app = document.getElementById("app");
-const topProgress = document.getElementById("topProgress");
-const topProgressFill = document.getElementById("topProgressFill");
-const topProgressPct = document.getElementById("topProgressPct");
-const topProgressLabel = document.getElementById("topProgressLabel");
-const toastStack = document.getElementById("toastStack");
 
 let questions = [];
 let current = 0;
@@ -1646,44 +1135,7 @@ let settings = {};
 let selectedProduct = null;
 let respondent = { name: "", phone: "", sessionId: "" };
 
-let isTransitioning = false;
-let lastDirection = "next";
-
 const isAdminMode = () => window.location.hash === "#admin";
-
-/* ===== TOAST ===== */
-function toast(message, type = "info", duration = 3000) {
-  const icons = { success: "✓", error: "!", info: "i" };
-  const t = document.createElement("div");
-  t.className = `toast ${type}`;
-  t.innerHTML = `<div class="toast-icon">${icons[type] || "i"}</div><div>${message}</div>`;
-  toastStack.appendChild(t);
-  setTimeout(() => {
-    t.classList.add("out");
-    setTimeout(() => t.remove(), 300);
-  }, duration);
-}
-
-/* ===== CONFETE ===== */
-function launchConfetti() {
-  const colors = ["#7c5cff", "#a855f7", "#c084fc", "#22d3ee", "#4ade80", "#f472b6", "#fbbf24"];
-  const count = 80;
-  for (let i = 0; i < count; i++) {
-    const piece = document.createElement("div");
-    piece.className = "confetti-piece";
-    const size = 6 + Math.random() * 8;
-    piece.style.width = size + "px";
-    piece.style.height = size + "px";
-    piece.style.left = Math.random() * 100 + "vw";
-    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
-    piece.style.animationDuration = (2.5 + Math.random() * 2) + "s";
-    piece.style.animationDelay = (Math.random() * 0.5) + "s";
-    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
-    document.body.appendChild(piece);
-    setTimeout(() => piece.remove(), 5000);
-  }
-}
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -1730,24 +1182,8 @@ function escapeHtml(str) {
 }
 
 function updateProgress() {
-  const total = questions.length;
-  // Percent based on current step (step N of total = N/total * 100)
-  const pct = total ? Math.round(((current + 1) / total) * 100) : 0;
-  topProgressFill.style.width = pct + "%";
-  topProgressPct.textContent = pct + "%";
-  topProgressLabel.textContent = total
-    ? `Etapa ${Math.min(current + 1, total)} de ${total}`
-    : "Etapa";
-}
-
-function showTopProgress(show) {
-  if (show) {
-    topProgress.classList.add("visible");
-    document.body.classList.add("top-progress-visible");
-  } else {
-    topProgress.classList.remove("visible");
-    document.body.classList.remove("top-progress-visible");
-  }
+  const pct = questions.length ? (current / questions.length) * 100 : 0;
+  progressBar.style.width = pct + "%";
 }
 
 function renderVideo(url) {
@@ -1775,7 +1211,7 @@ function renderVideo(url) {
       "rel=0", "modestbranding=1", "playsinline=1",
       "showinfo=0", "iv_load_policy=3", "cc_load_policy=0",
       "disablekb=1", "fs=0", "color=white", "enablejsapi=0",
-      "controls=1", "autohide=1"
+      "controls=1", "autohide=1", "widget_referrer=", "origin="
     ].join("&");
 
     return `
@@ -1785,8 +1221,7 @@ function renderVideo(url) {
             src="https://www.youtube-nocookie.com/embed/${videoId}?${params}"
             allow="encrypted-media"
             allowfullscreen="false"
-            loading="lazy"
-            title="Vídeo da pergunta">
+            loading="lazy">
           </iframe>
         </div>
       </div>`;
@@ -1802,8 +1237,7 @@ function renderVideo(url) {
           src="https://drive.google.com/file/d/${driveId}/preview?rm=minimal&controls=1&showinfo=0&modestbranding=1"
           allow="encrypted-media"
           allowfullscreen
-          loading="lazy"
-          title="Vídeo da pergunta">
+          loading="lazy">
         </iframe>
       </div>
     </div>`;
@@ -1851,7 +1285,7 @@ function renderProductHeader() {
           <div class="product-header-name">${info.name}</div>
         </div>
       </div>
-      <button class="product-header-change" id="changeProductBtn" type="button">🔄 Trocar</button>
+      <button class="product-header-change" id="changeProductBtn">🔄 Trocar</button>
     </div>
   `;
 }
@@ -1861,7 +1295,6 @@ function attachChangeProductHandler() {
   if (changeBtn) {
     changeBtn.onclick = () => {
       if (confirm("Trocar de formulário? Você vai perder o progresso atual.")) {
-        showTopProgress(false);
         renderChoiceScreen();
       }
     };
@@ -1878,57 +1311,47 @@ function getSessionProduct(s) {
 }
 
 function renderChoiceScreen() {
-  showTopProgress(false);
+  progressBar.style.width = "0%";
   app.innerHTML = `
     <div class="choice-screen">
       ${getLogoHtml()}
       <h1>🎸 Bem-vindo!</h1>
       <p>Escolha por onde quer começar</p>
       <div class="choice-cards">
-        <div class="choice-card" data-product="mentoria" tabindex="0" role="button">
+        <div class="choice-card" data-product="mentoria">
           ${settings.mentoria_image
             ? `<img src="${settings.mentoria_image}" alt="Mentoria" class="choice-card-image">`
             : `<div class="icon">🎓</div>`
           }
           <h3>Mentoria Online</h3>
           <p>${escapeHtml(settings.mentoria_description || "Aulas individuais de contrabaixo online")}</p>
-          <div class="choice-card-cta">Começar →</div>
         </div>
-        <div class="choice-card" data-product="gps" tabindex="0" role="button">
+        <div class="choice-card" data-product="gps">
           ${settings.gps_image
             ? `<img src="${settings.gps_image}" alt="GPS" class="choice-card-image">`
             : `<div class="icon">🧭</div>`
           }
           <h3>GPS do Baixista</h3>
           <p>${escapeHtml(settings.gps_description || "Responda o questionário e descubra seu nível")}</p>
-          <div class="choice-card-cta">Começar →</div>
         </div>
       </div>
     </div>
   `;
 
   document.querySelectorAll(".choice-card").forEach(card => {
-    const select = () => {
+    card.onclick = () => {
       selectedProduct = card.dataset.product;
       loadQuestionsForProduct(selectedProduct);
-    };
-    card.onclick = select;
-    card.onkeydown = (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        select();
-      }
     };
   });
 }
 
 async function loadQuestionsForProduct(product) {
-  app.innerHTML = '<div class="loading">Carregando perguntas...</div>';
+  app.innerHTML = '<div class="loading">Carregando...</div>';
   try {
     const res = await fetch(`${API_URL}/api/questions?product=${product}`);
     questions = await res.json();
     if (!questions.length) {
-      showTopProgress(false);
       app.innerHTML = '<div class="empty">Nenhuma pergunta cadastrada para este formulário.</div>';
       return;
     }
@@ -1939,14 +1362,12 @@ async function loadQuestionsForProduct(product) {
       respondent.name = "Anônimo";
       respondent.phone = "";
       respondent.sessionId = `gps_anon_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      showTopProgress(true);
       renderQuestion();
     } else {
       renderIdentifyScreen();
     }
   } catch (e) {
     app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
-    toast("Erro ao conectar com o servidor", "error");
   }
 }
 
@@ -1967,7 +1388,7 @@ function renderIdentifyScreen() {
         <input type="text" id="identifyName" placeholder="Ex: Vinicius Silva" autocomplete="name">
       </div>
 
-      <button class="btn btn-primary" id="startBtn">Começar o formulário →</button>
+      <button class="btn btn-primary" id="startBtn">Começar o formulário</button>
       <div class="error" id="identifyError"></div>
 
       <div style="margin-top:20px;">
@@ -1986,7 +1407,6 @@ function renderIdentifyScreen() {
     const name = nameInput.value.trim();
     if (!name || name.length < 2) {
       errorEl.textContent = "Por favor, digite seu nome completo.";
-      nameInput.focus();
       return;
     }
     const cleanName = name.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
@@ -1995,7 +1415,6 @@ function renderIdentifyScreen() {
     respondent.sessionId = `${selectedProduct}_${cleanName}_${Date.now()}`;
     current = 0;
     answers = {};
-    showTopProgress(true);
     renderQuestion();
   }
 
@@ -2006,46 +1425,71 @@ function renderIdentifyScreen() {
   attachChangeProductHandler();
 }
 
-function renderStepDots() {
-  if (!questions.length) return "";
-  const dots = questions.map((_, i) => {
-    let cls = "step-dot";
-    if (i < current) cls += " done";
-    if (i === current) cls += " current";
-    return `<div class="${cls}" data-index="${i}" title="Pergunta ${i + 1}"></div>`;
-  }).join("");
-  return `<div class="step-dots">${dots}</div>`;
-}
-
-function attachStepDotsHandler() {
-  document.querySelectorAll(".step-dot").forEach(dot => {
-    dot.onclick = () => {
-      const idx = parseInt(dot.dataset.index);
-      if (idx < current) {
-        current = idx;
-        lastDirection = "prev";
-        renderQuestion();
-      }
-    };
-  });
-}
-
-function getScaleLabel(v) {
-  const n = parseInt(v);
-  if (isNaN(n)) return "";
-  if (n === 0) return "Nada";
-  if (n <= 2) return "Muito pouco";
-  if (n <= 4) return "Pouco";
-  if (n === 5) return "Neutro";
-  if (n <= 7) return "Bastante";
-  if (n <= 9) return "Muito";
-  return "Máximo";
-}
-
-function renderQuestion(direction) {
+function renderQuestion() {
   if (current >= questions.length) {
-    showTopProgress(false);
-    renderDone();
+    progressBar.style.width = "100%";
+
+    const info = productInfo(selectedProduct);
+    const isGps = selectedProduct === "gps";
+    const checkoutUrl = isGps ? settings.gps_checkout_url : null;
+    const redirecting = isGps && !!checkoutUrl;
+    const waPhone = respondent.phone ? escapeHtml(respondent.phone) : null;
+
+    let finalHtml = "";
+
+    if (isGps) {
+      finalHtml = redirecting
+        ? `<p style="margin-top:20px;color:var(--accent-3);font-weight:600;">
+             Redirecionando para o checkout...
+           </p>
+           <p style="font-size:13px;color:var(--text-muted);margin-top:10px;">
+             Se não for redirecionado,
+             <a href="${escapeHtml(checkoutUrl)}" style="color:var(--accent-3);">clique aqui</a>.
+           </p>`
+        : `<p style="margin-top:20px;color:#ef4444;font-size:14px;">
+             Link de checkout ainda não configurado.
+           </p>`;
+    } else {
+      finalHtml = `
+        <div style="
+          margin-top:24px; padding:20px;
+          background:rgba(74,222,128,0.08);
+          border:1px solid rgba(74,222,128,0.3);
+          border-radius:16px; text-align:left;
+        ">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="font-size:28px;flex-shrink:0;">💬</div>
+            <div>
+              <div style="font-weight:800;color:#4ade80;margin-bottom:6px;">
+                Fique de olho no WhatsApp!
+              </div>
+              <p style="font-size:14px;color:#ccc;line-height:1.6;margin:0;">
+                Nossa equipe vai entrar em contato com você pelo WhatsApp
+                ${waPhone ? `<strong style="color:#4ade80;">${waPhone}</strong>` : ''}
+                para combinar os próximos passos da sua mentoria.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:20px;font-size:13px;color:var(--text-muted);">
+          Se preferir, você também pode nos chamar diretamente.
+        </p>
+      `;
+    }
+
+    app.innerHTML = `
+      <div class="done">
+        ${getLogoHtml()}
+        <div style="font-size:56px;margin-bottom:12px;">${info.icon}</div>
+        <h2>✅ Obrigado${respondent.name !== "Anônimo" ? `, ${escapeHtml(respondent.name.split(" ")[0])}` : ''}!</h2>
+        <p style="color:var(--accent-3);font-weight:700;margin-bottom:8px;">${info.name}</p>
+        <p>Suas respostas foram enviadas com sucesso.</p>
+        ${finalHtml}
+      </div>`;
+
+    if (redirecting) {
+      setTimeout(() => { window.location.href = checkoutUrl; }, 1800);
+    }
     return;
   }
 
@@ -2053,94 +1497,51 @@ function renderQuestion(direction) {
   const saved = answers[current] || "";
 
   let inputHtml = "";
-  let keyboardHintHtml = "";
-
   if (q.type === "choice" && Array.isArray(q.options)) {
     inputHtml = `<div class="options">` +
       q.options.map((opt, i) => `
-        <div class="option ${saved === opt ? 'selected' : ''}" data-value="${escapeHtml(opt)}" data-index="${i}" tabindex="0" role="button">
+        <div class="option ${saved === opt ? 'selected' : ''}" data-value="${escapeHtml(opt)}">
           <div class="option-letter">${String.fromCharCode(65 + i)}</div>
-          <div class="option-text">${escapeHtml(opt)}</div>
-          <div class="option-check">✓</div>
+          <div>${escapeHtml(opt)}</div>
         </div>
       `).join("") + `</div>`;
-    keyboardHintHtml = `<div class="keyboard-hint">
-      Dica: use <kbd>A</kbd><kbd>B</kbd><kbd>C</kbd> ou <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> para escolher • <kbd>Enter</kbd> para avançar
-    </div>`;
   } else if (q.type === "scale" && Array.isArray(q.options)) {
-    inputHtml = `
-      <div class="scale-wrap">
-        <div class="scale">` +
-          q.options.map(v => `
-            <button type="button" class="scale-btn ${saved == v ? 'selected' : ''}"
-                    data-value="${v}" title="${getScaleLabel(v)}">${v}</button>
-          `).join("") + `
-        </div>
-        <div class="scale-current-label" id="scaleCurrentLabel">${
-          saved !== "" ? `Você escolheu: <strong>${saved}</strong> · ${getScaleLabel(saved)}` : ''
-        }</div>
-        <div class="scale-labels">
-          <span>← Nada</span>
-          <span>Máximo →</span>
-        </div>
-      </div>`;
-    keyboardHintHtml = `<div class="keyboard-hint">
-      Dica: use <kbd>0</kbd> a <kbd>10</kbd> para escolher • <kbd>Enter</kbd> para avançar
-    </div>`;
+    inputHtml = `<div class="scale">` +
+      q.options.map(v => `
+        <button type="button" class="scale-btn ${saved == v ? 'selected' : ''}"
+                data-value="${v}">${v}</button>
+      `).join("") + `</div>`;
   } else {
-    inputHtml = `<div class="textarea-wrap">
-      <textarea id="answer" placeholder="Digite sua resposta..." maxlength="2000">${escapeHtml(saved)}</textarea>
-      <div class="char-count" id="charCount">0 / 2000</div>
-    </div>`;
-    keyboardHintHtml = `<div class="keyboard-hint">
-      Dica: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> para enviar
-    </div>`;
+    inputHtml = `<textarea id="answer" placeholder="Digite sua resposta...">${escapeHtml(saved)}</textarea>`;
   }
 
-  const enterClass = direction === "prev" ? "step-enter-left" : (direction === "next" ? "step-enter-right" : "step");
-
   app.innerHTML = `
-    <div class="${enterClass}">
+    <div class="step">
       ${getLogoHtml()}
       ${renderProductHeader()}
-      ${renderStepDots()}
       <div class="step-number">Pergunta ${current + 1} de ${questions.length}</div>
       <div class="question">${escapeHtml(q.text)}</div>
       ${renderVideo(q.video_url)}
       ${inputHtml}
-      ${keyboardHintHtml}
       <div class="actions">
-        ${current > 0 ? '<button class="btn btn-secondary" id="prevBtn" type="button">← Voltar</button>' : ''}
-        <button class="btn btn-primary" id="nextBtn" type="button">
-          ${current === questions.length - 1 ? 'Enviar respostas ✓' : 'Próxima →'}
+        ${current > 0 ? '<button class="btn btn-secondary" id="prevBtn">← Voltar</button>' : ''}
+        <button class="btn btn-primary" id="nextBtn">
+          ${current === questions.length - 1 ? 'Enviar ✓' : 'Próxima →'}
         </button>
       </div>
     </div>`;
 
   updateProgress();
-  attachStepDotsHandler();
 
   const nextBtn = document.getElementById("nextBtn");
   const prevBtn = document.getElementById("prevBtn");
 
   if (q.type === "choice") {
     document.querySelectorAll(".option").forEach(el => {
-      const select = () => {
-        document.querySelectorAll(".option").forEach(o => {
-          o.classList.remove("selected");
-          o.setAttribute("aria-checked", "false");
-        });
+      el.onclick = () => {
+        document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
         el.classList.add("selected");
-        el.setAttribute("aria-checked", "true");
         answers[current] = el.dataset.value;
-      };
-      el.onclick = select;
-      el.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          select();
-          setTimeout(() => goNext(), 250);
-        }
       };
     });
   }
@@ -2151,261 +1552,35 @@ function renderQuestion(direction) {
         document.querySelectorAll(".scale-btn").forEach(o => o.classList.remove("selected"));
         el.classList.add("selected");
         answers[current] = el.dataset.value;
-        const lbl = document.getElementById("scaleCurrentLabel");
-        if (lbl) {
-          lbl.innerHTML = `Você escolheu: <strong>${el.dataset.value}</strong> · ${getScaleLabel(el.dataset.value)}`;
-        }
       };
     });
   }
 
+  nextBtn.onclick = () => {
+    if (q.type === "text") answers[current] = document.getElementById("answer").value;
+    const val = answers[current] || "";
+    if (!val.trim()) { alert("Por favor, responda antes de continuar."); return; }
+    submitAnswer(q.id, val);
+  };
+
+  if (prevBtn) prevBtn.onclick = () => { current--; renderQuestion(); };
+
   if (q.type === "text") {
     const ta = document.getElementById("answer");
-    const cc = document.getElementById("charCount");
-    if (ta) {
-      const updateCount = () => {
-        const len = ta.value.length;
-        cc.textContent = `${len} / 2000`;
-        cc.classList.toggle("warn", len > 1800);
-      };
-      ta.addEventListener("input", updateCount);
-      updateCount();
-      if (!saved) {
-        setTimeout(() => ta.focus(), 300);
-      }
-      ta.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          nextBtn.click();
-        }
-      });
-    }
+    if (ta && !saved) ta.focus();
   }
-
-  nextBtn.onclick = () => goNext();
-  if (prevBtn) prevBtn.onclick = () => goPrev();
 
   attachChangeProductHandler();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function goNext() {
-  if (isTransitioning) return;
-  const q = questions[current];
-  if (q.type === "text") {
-    const ta = document.getElementById("answer");
-    if (ta) answers[current] = ta.value;
-  }
-  const val = (answers[current] || "").toString().trim();
-  if (!val) {
-    toast("Responda antes de continuar", "error", 2200);
-    return;
-  }
-  isTransitioning = true;
-  submitAnswer(q.id, answers[current]);
-}
-
-function goPrev() {
-  if (isTransitioning) return;
-  if (current === 0) return;
-  lastDirection = "prev";
-  current--;
-  renderQuestion("prev");
-  setTimeout(() => { isTransitioning = false; }, 300);
-}
-
-/* ===== KEYBOARD SHORTCUTS ===== */
-document.addEventListener("keydown", (e) => {
-  if (isAdminMode()) return;
-  if (!questions.length || current >= questions.length) return;
-  // Skip if user is typing in an input/textarea (handled separately for ctrl+enter)
-  const tag = (e.target.tagName || "").toLowerCase();
-  const isTyping = tag === "input" || tag === "textarea" || tag === "select";
-
-  const q = questions[current];
-  if (!q) return;
-
-  // Enter to advance (when not typing in textarea)
-  if (e.key === "Enter" && !isTyping) {
-    e.preventDefault();
-    goNext();
-    return;
-  }
-
-  // Arrow left = previous
-  if (e.key === "ArrowLeft" && !isTyping && current > 0) {
-    e.preventDefault();
-    goPrev();
-    return;
-  }
-
-  // Arrow right = next (only if answered)
-  if (e.key === "ArrowRight" && !isTyping) {
-    e.preventDefault();
-    goNext();
-    return;
-  }
-
-  if (q.type === "choice" && !isTyping) {
-    // 1-9 selects option index 0-8
-    if (/^[1-9]$/.test(e.key)) {
-      const idx = parseInt(e.key) - 1;
-      const opts = document.querySelectorAll(".option");
-      if (opts[idx]) {
-        e.preventDefault();
-        opts[idx].click();
-        setTimeout(() => goNext(), 350);
-      }
-      return;
-    }
-    // A-Z selects option by letter
-    if (/^[a-zA-Z]$/.test(e.key)) {
-      const idx = e.key.toUpperCase().charCodeAt(0) - 65;
-      const opts = document.querySelectorAll(".option");
-      if (opts[idx]) {
-        e.preventDefault();
-        opts[idx].click();
-        setTimeout(() => goNext(), 350);
-      }
-      return;
-    }
-  }
-
-  if (q.type === "scale" && !isTyping) {
-    if (/^[0-9]$/.test(e.key)) {
-      const val = e.key;
-      const btn = document.querySelector(`.scale-btn[data-value="${val}"]`);
-      if (btn) {
-        e.preventDefault();
-        btn.click();
-      }
-      return;
-    }
-    if (e.key === "1" && e.shiftKey) {
-      const btn = document.querySelector(`.scale-btn[data-value="10"]`);
-      if (btn) { e.preventDefault(); btn.click(); }
-      return;
-    }
-  }
-});
-
-function renderDone() {
-  const info = productInfo(selectedProduct);
-  const isGps = selectedProduct === "gps";
-  const checkoutUrl = isGps ? settings.gps_checkout_url : null;
-  const redirecting = isGps && !!checkoutUrl;
-  const waPhone = respondent.phone ? escapeHtml(respondent.phone) : null;
-
-  let finalHtml = "";
-  let summaryHtml = "";
-
-  // Sumário das respostas
-  if (questions.length && Object.keys(answers).length) {
-    summaryHtml = `<div class="summary-card">
-      <div class="summary-title">📋 Suas respostas</div>
-      ${questions.map((q, i) => {
-        const a = answers[i] || "(sem resposta)";
-        return `<div class="summary-row">
-          <div class="summary-q">${i + 1}. ${escapeHtml(q.text)}</div>
-          <div class="summary-a">${escapeHtml(a)}</div>
-        </div>`;
-      }).join("")}
-    </div>`;
-  }
-
-  if (isGps) {
-    finalHtml = redirecting
-      ? `<div style="margin-top:24px;padding:20px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:16px;text-align:left;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="font-size:28px;flex-shrink:0;">🚀</div>
-            <div>
-              <div style="font-weight:800;color:var(--accent-3);margin-bottom:6px;">Redirecionando para o checkout...</div>
-              <p style="font-size:14px;color:#ccc;line-height:1.6;margin:0;">
-                Se não for redirecionado automaticamente,
-                <a href="${escapeHtml(checkoutUrl)}" style="color:var(--accent-3);font-weight:700;">clique aqui</a>.
-              </p>
-            </div>
-          </div>
-        </div>`
-      : `<div style="margin-top:24px;padding:18px 20px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.28);border-radius:14px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <div style="font-size:24px;flex-shrink:0;">⏳</div>
-            <div>
-              <div style="font-weight:700;color:var(--accent-amber);margin-bottom:4px;font-size:14px;">Em breve você receberá seu acesso</div>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">Nossa equipe vai analisar suas respostas e entrar em contato pelos próximos passos.</p>
-            </div>
-          </div>
-        </div>`;
-  } else {
-    finalHtml = `
-      <div style="
-        margin-top:24px; padding:20px;
-        background:rgba(74,222,128,0.08);
-        border:1px solid rgba(74,222,128,0.3);
-        border-radius:16px; text-align:left;
-      ">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
-          <div style="font-size:28px;flex-shrink:0;">💬</div>
-          <div>
-            <div style="font-weight:800;color:#4ade80;margin-bottom:6px;">
-              Fique de olho no WhatsApp!
-            </div>
-            <p style="font-size:14px;color:#ccc;line-height:1.6;margin:0;">
-              Nossa equipe vai entrar em contato com você pelo WhatsApp
-              ${waPhone ? `<strong style="color:#4ade80;">${waPhone}</strong>` : ''}
-              para combinar os próximos passos da sua mentoria.
-            </p>
-          </div>
-        </div>
-      </div>
-      <p style="margin-top:20px;font-size:13px;color:var(--text-muted);">
-        Se preferir, você também pode nos chamar diretamente.
-      </p>`;
-  }
-
-  app.innerHTML = `
-    <div class="done" style="animation: fadeIn 0.5s var(--ease-smooth);">
-      ${getLogoHtml()}
-      <div class="done-check">
-        <svg viewBox="0 0 50 50"><polyline points="14,27 22,35 38,18"/></svg>
-      </div>
-      <h2>Obrigado${respondent.name && respondent.name !== "Anônimo" ? `, ${escapeHtml(respondent.name.split(" ")[0])}` : ''}!</h2>
-      <p style="color:var(--accent-3);font-weight:700;margin-bottom:8px;">${info.name}</p>
-      <p>Suas respostas foram enviadas com sucesso.</p>
-      ${finalHtml}
-      ${summaryHtml}
-      <div style="margin-top:28px;">
-        <button class="btn btn-secondary" id="restartBtn" type="button">↻ Refazer formulário</button>
-      </div>
-    </div>`;
-
-  const restartBtn = document.getElementById("restartBtn");
-  if (restartBtn) {
-    restartBtn.onclick = () => {
-      current = 0;
-      answers = {};
-      renderChoiceScreen();
-    };
-  }
-
-  launchConfetti();
-  setTimeout(() => launchConfetti(), 600);
-
-  if (redirecting) {
-    setTimeout(() => { window.location.href = checkoutUrl; }, 2200);
-  }
 }
 
 async function submitAnswer(questionId, answer) {
   const btn = document.getElementById("nextBtn");
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Enviando...";
-  }
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
 
   const isLast = current === questions.length - 1;
   if (isLast && selectedProduct === "mentoria") {
-    const phoneMatch = (answer || "").toString().match(/[\d\s\-\(\)\+]{8,}/);
+    const phoneMatch = answer.match(/[\d\s\-\(\)\+]{8,}/);
     if (phoneMatch) respondent.phone = phoneMatch[0].trim();
   }
 
@@ -2424,16 +1599,11 @@ async function submitAnswer(questionId, answer) {
       })
     });
     current++;
-    lastDirection = "next";
-    renderQuestion("next");
-    isTransitioning = false;
+    renderQuestion();
   } catch (e) {
-    toast("Erro ao enviar. Tente novamente.", "error");
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = current === questions.length - 1 ? 'Enviar respostas ✓' : 'Próxima →';
-    }
-    isTransitioning = false;
+    alert("Erro ao enviar. Tente novamente.");
+    btn.disabled = false;
+    btn.textContent = "Próxima";
   }
 }
 
@@ -2444,7 +1614,6 @@ async function initForm() {
     renderChoiceScreen();
   } catch (e) {
     app.innerHTML = '<div class="empty">Erro ao conectar com o servidor.</div>';
-    toast("Erro ao conectar com o servidor", "error");
   }
 }
 
@@ -2461,8 +1630,6 @@ function doLogin() {
 
   if (pass.trim() !== FIXED_PASSWORD) {
     loginError.textContent = "Senha incorreta.";
-    passwordInput.value = "";
-    passwordInput.focus();
     return;
   }
 
@@ -2473,7 +1640,6 @@ function doLogin() {
   loadSettings();
   loadQuestions();
   loadResponses();
-  toast("Bem-vindo ao painel administrativo", "success");
 }
 
 function authHeaders() {
@@ -2547,12 +1713,10 @@ document.getElementById("saveSettingsBtn").onclick = async () => {
     if (!res.ok) throw new Error();
     fb.style.color = "#4ade80";
     fb.textContent = "✅ Salvo!";
-    toast("Configurações salvas!", "success");
     setTimeout(() => { fb.textContent = ""; }, 2500);
   } catch (e) {
     fb.style.color = "#ef4444";
     fb.textContent = "Erro ao salvar";
-    toast("Erro ao salvar configurações", "error");
   } finally {
     btn.disabled = false;
   }
@@ -2631,13 +1795,11 @@ document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
       settings[key] = base64;
       fb.style.color = "#4ade80";
       fb.textContent = `✅ Salva! (${sizeKb}KB)`;
-      toast("Imagem salva com sucesso!", "success");
       setTimeout(() => { fb.textContent = ""; }, 3000);
     } catch (err) {
       console.error("Erro no upload:", err);
       fb.style.color = "#ef4444";
       fb.textContent = `❌ ${err.message || "Erro ao salvar"}`;
-      toast("Erro ao salvar imagem", "error");
     }
   });
 });
@@ -2780,12 +1942,12 @@ document.getElementById("addBtn").onclick = async () => {
   const product = document.getElementById("newProduct").value;
   const editingId = document.getElementById("addBtn").dataset.editingId;
 
-  if (!text) { toast("Digite o texto da pergunta.", "error"); return; }
+  if (!text) { alert("Digite o texto da pergunta."); return; }
 
   let options = null;
   if (type === "choice") {
     options = rawOptions.split("\n").map(s => s.trim()).filter(Boolean);
-    if (!options.length) { toast("Adicione pelo menos uma opção.", "error"); return; }
+    if (!options.length) { alert("Adicione pelo menos uma opção."); return; }
   } else if (type === "scale") {
     options = [0,1,2,3,4,5,6,7,8,9,10];
   }
@@ -2804,9 +1966,8 @@ document.getElementById("addBtn").onclick = async () => {
     if (!res.ok) throw new Error();
     resetForm();
     loadQuestions();
-    toast(isEditing ? "Pergunta atualizada!" : "Pergunta adicionada!", "success");
   } catch (e) {
-    toast(isEditing ? "Erro ao salvar edição." : "Erro ao adicionar.", "error");
+    alert(isEditing ? "Erro ao salvar edição." : "Erro ao adicionar.");
   }
 };
 
@@ -2818,9 +1979,8 @@ async function deleteQuestion(id) {
     });
     loadQuestions();
     loadResponses();
-    toast("Pergunta excluída", "success");
   } catch (e) {
-    toast("Erro ao excluir.", "error");
+    alert("Erro ao excluir.");
   }
 }
 
@@ -2939,7 +2099,7 @@ function copySession(idx) {
   s.answers.forEach((a, i) => {
     text += `${i + 1}. ${a.question}\n→ ${a.answer || "(vazio)"}\n\n`;
   });
-  navigator.clipboard.writeText(text).then(() => toast("Respostas copiadas!", "success"));
+  navigator.clipboard.writeText(text).then(() => alert("Respostas copiadas!"));
 }
 
 async function deleteSession(sessionId) {
@@ -2949,9 +2109,8 @@ async function deleteSession(sessionId) {
       method: "DELETE", headers: authHeaders()
     });
     loadResponses();
-    toast("Respostas excluídas", "success");
   } catch (e) {
-    toast("Erro ao excluir.", "error");
+    alert("Erro ao excluir.");
   }
 }
 
@@ -2961,7 +2120,7 @@ document.getElementById("exportCsvBtn").onclick = () => {
     : currentSessions.filter(s => getSessionProduct(s) === currentFilter);
 
   if (!source.length) {
-    toast("Nenhuma resposta pra exportar.", "info");
+    alert("Nenhuma resposta pra exportar.");
     return;
   }
 
@@ -3002,14 +2161,12 @@ document.getElementById("exportCsvBtn").onclick = () => {
   a.download = `respostas_${currentFilter}_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  toast("CSV exportado!", "success");
 };
 
 document.getElementById("refreshBtn").onclick = () => {
   loadQuestions();
   loadResponses();
   loadSettings();
-  toast("Atualizado!", "info");
 };
 
 document.getElementById("testEmailBtn").onclick = async () => {
@@ -3023,12 +2180,12 @@ document.getElementById("testEmailBtn").onclick = async () => {
     });
     const data = await res.json();
     if (data.ok) {
-      toast("Email de teste enviado! Confere a caixa de entrada.", "success", 4000);
+      alert("✅ Email de teste enviado! Confere a caixa de entrada.");
     } else {
-      toast("Erro ao enviar: " + JSON.stringify(data.error), "error", 4000);
+      alert("❌ Erro ao enviar:\n" + JSON.stringify(data.error));
     }
   } catch (e) {
-    toast("Erro de conexão: " + e.message, "error");
+    alert("❌ Erro de conexão: " + e.message);
   } finally {
     btn.disabled = false;
     btn.textContent = "📧 Testar email";
@@ -3046,7 +2203,6 @@ function showLoginView() {
   userView.classList.add("hidden");
   adminView.classList.add("hidden");
   loginScreen.classList.remove("hidden");
-  showTopProgress(false);
 }
 
 function handleHashChange() {
@@ -3055,7 +2211,6 @@ function handleHashChange() {
       userView.classList.add("hidden");
       loginScreen.classList.add("hidden");
       adminView.classList.remove("hidden");
-      showTopProgress(false);
       loadSettings();
       loadQuestions();
       loadResponses();
